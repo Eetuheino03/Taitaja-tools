@@ -2,14 +2,15 @@
 Function Main() {
 Clear-Host
 $valintaS = 0
-Write-host "Valitse asetukset mitk√§ haluat m√§√§ritt√§√§!"
+Write-host "Valitse asetukset mitk‰ haluat m‰‰ritt‰‰!"
 $valintaS = Read-host "
                       Name:$ComputerName|IP:$ComputerIP
                       <------------------------------>
                       | 1. Palvelin valmistelu       |           Huomaa! .xml conf tiedosto tarvitsee 
-                      | 2. AD pystytys               |  olla samassa kansiossa ett√§ ominaisuus asennukset toimivat!
-                      | 3. Poistu                    |
-                      | 4. Versio                    |         
+                      | 2. AD valmistelu             |
+                      | 3. (ominaisuus tulossa!)     |  olla samassa kansiossa ett‰ ominaisuus asennukset toimivat!
+                      | 4. Poistu                    |
+                      | 5. Versio                    |         
                       | "
                                                     
 if($valintaS -eq 1) {
@@ -25,16 +26,21 @@ sleep -Seconds 2
 Clear-Host
 adASK
 }elseif($valintaS -eq 3){
+    Clear-Host
+    sleep -Seconds 2
+    Clear-Host
+    Main
+}elseif($valintaS -eq 4){
 Clear-Host
 Write-Host "poistutaan!"
 sleep -Seconds 2
 exit
-}elseif($valintaS -eq 4){
+}elseif($valintaS -eq 5){
 Clear-Host
-Write-Host "Siirryt√§√§n versio valikkoon!"
+Write-Host "Siirryt‰‰n versio valikkoon!"
 versioControl
 }else {
-Write-Host "Et valinnut mit√§√§n valitse uudelleen!"
+Write-Host "Et valinnut mit‰‰n valitse uudelleen!"
 sleep -Seconds 2
 Main
 }
@@ -50,10 +56,10 @@ Clear-Host
 hostAsk
 }else {
 Clear-Host
-$vastausUudelleenS= Read-Host "Haluatko palata p√§√§valikkoon vai sulkea ohjelman? p/s"
+$vastausUudelleenS= Read-Host "Haluatko palata p‰‰valikkoon vai sulkea ohjelman? p/s"
 if($vastausUudelleenS -eq "p" ){
 Clear-Host
-Write-Host "Ohjataan p√§√§valikkoon!"
+Write-Host "Ohjataan p‰‰valikkoon!"
 Main
 }
 if($vastausUudelleenS -eq "s"){
@@ -71,7 +77,7 @@ $InterFaceINDEX = Read-Host "Laita Verkko kortin indexi tai nimi"
 Clear-Host
 if($InterFaceINDEX -eq "") {
     Clear-Host
-    Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!"
+    Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!"
     sleep -Seconds 2
     Clear-Host
     adapterSelect
@@ -84,7 +90,7 @@ Function ComputeripS(){
 $ComputerIP = Read-Host "Aseta staattinen osoite "
 if($ComputerIP -eq "") {
 Clear-Host
-Write-Host "T√§m√§ kohta ei voi olla tyhj√§!"
+Write-Host "T‰m‰ kohta ei voi olla tyhj‰!"
 sleep -Seconds 2
 Clear-Host
 ComputeripS
@@ -96,7 +102,7 @@ Function subnetS(){
 $Subnetprefix = Read-Host "Aseta subnet prefix "
 if($Subnetprefix -eq ""){
 Clear-Host
-Write-Host "T√§t√§ osiota ei voi j√§tt√§√§ tyhj√§ksi!"
+Write-Host "T‰t‰ osiota ei voi j‰tt‰‰ tyhj‰ksi!"
 sleep -Seconds 2
 Clear-Host
 subnetS
@@ -129,7 +135,7 @@ $gateawayAnwser = Read-host "Haluatko muuttaa staattisen osoitteen vai gateaway 
     gateawayS
     }elseif($gateawayAnwser -eq ""){
     Clear-Host
-    Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!"
+    Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!"
     sleep -Seconds 2
     Clear-Host
     checkgatawayC
@@ -143,7 +149,7 @@ checkgatawayC
 }else {
 if($GatewayIP -eq ""){
 Clear-Host
-Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!"
+Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!"
 sleep -Seconds 2
 Clear-Host
 gateawayS
@@ -168,15 +174,14 @@ Write-Host "Aloitetaan konfiguraatiota!"
 timeask
 }else {
 Clear-Host
-Write-Host "Et halunnut aloittaa konfiguraatio skripti√§!"
+Write-Host "Et halunnut aloittaa konfiguraatio skripti‰!"
 $reask = Read-Host "Haluatko aloittaa sen uudelleen? k/e"
 UudelleenSuoritus
 }
 }
 Function timeask(){
-$time = Read-Host "Aseta nopeus toimintojen v√§lill√§ sekunnissa, paina enter tai sy√∂t√§ lukema. Normaalisti 5 sekuntia!"
-if ( $time -in 1..10)
-{
+$time = Read-Host "Aseta nopeus toimintojen v‰lill‰ sekunnissa, paina enter tai syˆt‰ lukema. Normaalisti 5 sekuntia!"
+if ( $time -in 1..10)      {
     $timeto = $time
     setup-script
 }else {
@@ -186,133 +191,111 @@ if ( $time -in 1..10)
 }
 Function setup-script() {
 Clear-Host
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
 
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan nime√§: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
-#Renename-computer -NewName $ComputerName
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan nime‰: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
+Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
 sleep -Seconds $timeto
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
 sleep -Seconds $timeto
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
 sleep -Seconds $timeto
 #Verkko kohta!
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-# Tarkistaa Interface sy√∂tt√∂ muodon
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+# Tarkistaa Interface syˆttˆ muodon
 If($InterFaceINDEX -match '[0-9]' ){
- Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+ Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
  sleep -Seconds $timeto
- #Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
- Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+ Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
+ Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
  sleep -Seconds $timeto
- #New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
- Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
+ New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+ Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
  sleep -Seconds $timeto
 }else {
- Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+ Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
  sleep -Seconds $timeto
- #Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
- Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+ Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
+ Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
  sleep -Seconds $timeto
- #New-NetIPAddress -InterfaceAlias $Subnetprefix -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
- Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
+ New-NetIPAddress -InterfaceAlias $Subnetprefix -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+ Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
  sleep -Seconds $timeto
  
 }
 
  
 sleep -Seconds $timeto
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
 sleep -Seconds $timeto
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
 sleep -Seconds $timeto
 #Verkko kohta loppuu!
 
 
 
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-#Install-WindowsFeature ‚ÄìConfigurationFilePath DeploymentConfigTemplate.xml
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+Install-WindowsFeature ñConfigurationFilePath DeploymentConfigTemplate.xml
 sleep -Seconds $timeto
-Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
+Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
 sleep -Seconds $timeto
 
-Write-Progress -Activity "Tehd√§√§n asetuksia" -Status "Asetukset tehty! K√§ynnistet√§√§n uudelleen!" -Id 1 -Completed
-Write-Output "Kone k√§ynnistyy uudelleen 10 sekunnin p√§√§st√§!"
+Write-Progress -Activity "Tehd‰‰n asetuksia" -Status "Asetukset tehty! K‰ynnistet‰‰n uudelleen!" -Id 1 -Completed
+Write-Output "Kone k‰ynnistyy uudelleen 10 sekunnin p‰‰st‰!"
 Write-Output "$timeto"
 sleep -Seconds 10
-#Restart-Computer -Force
+Restart-Computer -Force
 }
 Function adsetup(){
-#
-# Windows PowerShell script for AD DS Deployment
-#
+# AD Asetukset
+Try{
+    Install-ADDSForest -DomainName $DomainName -InstallDNS -ErrorAction Stop -NoRebootOnCompletion
+    Write-Host "Active Directory Domain Services asetukset on asetettu ilman ongelmia!" -ForegroundColor Green
+    }
+Catch{
+     Write-Warning -Message $("Virhe tuli asetuksien asetuksessa!: "+ $_.Exception.Message)
+     Break;
+     }
 
-Import-Module ADDSDeployment
-Install-ADDSForest `
--CreateDnsDelegation:$false `
--DatabasePath "C:\Windows\NTDS" `
--DomainMode "WinThreshold" `
--DomainName $DomainName `
--DomainNetbiosName $DomainNETBIOSName `
--ForestMode "WinThreshold" `
--InstallDns:$true `
--LogPath "C:\Windows\NTDS" `
--NoRebootOnCompletion:$false `
--SysvolPath "C:\Windows\SYSVOL" `
--SafeModeAdministratorPassword "$Password" `
--Force:$true
-#K√§ynnist√§ Uudelleen nyt!
-Restart-Computer -Force
+# K‰ynnist‰ uudelleen ja aseta asetukset!
+Write-Host "Talleta kaikki keskener‰iset tyˆt! Kone k‰ynnistyy uudelleen 30 sekunnin p‰‰st‰!"
+Sleep 30
+
+Try{
+    Restart-Computer -ComputerName $env:computername -ErrorAction Stop
+    Write-Host "Kone k‰ynnistyy uudelleen!!" -ForegroundColor Green
+    }
+Catch{
+     Write-Warning -Message $("Virhe tuli k‰ynnist‰ess‰ konetta uudelleen! $($env:computername). Error: "+ $_.Exception.Message)
+     Break;
+     }
 }
 Function adASK(){
 
 $DomainName = ""
-$DomainNETBIOSName = ""
-$Password = ""
 
 Function adask1(){
 $DomainName = Read-Host "Aseta toimialueen nimi"
 if($DomainName -eq ""){
 Clear-Host
-Write-Host "Toimialueen nime√§ ei ole laitettu!"
+Write-Host "Toimialueen nime‰ ei ole laitettu!"
 Clear-Host
 adask1
 }else {
-adask2
-}
-}
-Function adask2(){
-$DomainNETBIOSName = Read-Host "Aseta NetBios nimi"
-If($DomainNETBIOSName -eq ""){
-Clear-Host
-Write-Host "Toimialueen NETBIOS nime√§ ei ole laitettu!"
-Clear-Host
-adask2
-}else {
-adask3
-}
-}
-Function adask3(){
-$Password = Read-Host "laita salasana:" -AsSecureString
-If($DomainNETBIOSName -eq ""){
-Clear-Host
-Write-Host "Toimialueen salasanaa ei ole laitettu!"
-Clear-Host
-adask3
-}else {
 adsetup
-        }
-    }
-    adask1
+}
+}
+  adask1
 }
 Function versioControl(){
 Clear-Host
 Write-Host " Versio: 0.50
 By: Eetu Heino
 ---------------- 
-Tervetuloa K√§ytt√§m√§√§n automoitua
+Tervetuloa K‰ytt‰m‰‰n automoitua
 Microsoft palvelimen konfiguraatio
-          ty√∂kalua"  
-$valintaVersio = Read-Host "Haluatko Takaisin p√§√§valikkoon? k/e |"
+          tyˆkalua"  
+$valintaVersio = Read-Host "Haluatko Takaisin p‰‰valikkoon? k/e |"
 #Palautus Functio!
 if($valintaVersio -eq "k"){
 Write-Host "Palataan!"
@@ -320,7 +303,7 @@ sleep -Seconds 2
 Clear-Host
 Main
 }elseif($valintaVersio = "e"){
-Write-Host "Haluatko poistua skriptist√§ kokonaan?"
+Write-Host "Haluatko poistua skriptist‰ kokonaan?"
 $valintaVersio = Read-Host "k/e|"
 if($valintaVersio -eq "k"){
 Clear-Host
@@ -337,5 +320,6 @@ versioControl
 
 
 }
+
 
 main
