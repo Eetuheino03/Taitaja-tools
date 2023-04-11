@@ -1,2 +1,1 @@
-# Taitaja-tools
-taitajakisan automointi
+Windows palvelimen asennuksen automointiin
