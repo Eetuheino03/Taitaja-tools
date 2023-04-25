@@ -294,7 +294,7 @@ adsetup
 }
 Function versioControl(){
 Clear-Host
-Write-Host " Versio: 0.xx (Test-version 0.81)
+Write-Host " Versio: 0.xx (Test-version 0.82)
 By: Eetu Heino
 ---------------- 
 Tervetuloa Käyttämään automoitua
@@ -360,13 +360,15 @@ Function OUbuilder(){
         Write-Host " ___________________________ "
         Write-Host " |1. Pika ou rakennus      | "
         Write-Host " |2. Pika käyttäjien lisäys| "
-        Write-Host " |3. Takaisin              | "
+        Write-Host " |3. Pika ryhmien luonti   | "
+        Write-Host " |4. Takaisin              | "
         Write-Host " |-------------------------- "
         $OUanwser = Read-Host " |"
         switch($OUanwser){
             1 {OUask}
             2 {UserAsk}
-            3 {Lisävalikko}
+            3 {GroupMain}
+            4 {Lisävalikko}
         }
     }
     Function OUask(){
@@ -420,7 +422,6 @@ Function OUbuilder(){
                 ouRepetask2
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
-                    Write-Host "$OUmainS"
                     $OUnim = Read-Host "Syötä ala ou:n nimi"
                     New-ADOrganizationalUnit -Name $OUnim -Path "OU=$OUmainS2,OU=$OUmainS,DC=$OUdomain0,DC=$OUdomain1"
                 }
@@ -450,7 +451,6 @@ Function OUbuilder(){
         }
     OUdomainAsk
     }
-    
     Function OUsetup(){
         $OUExists = Get-ADOrganizationalUnit -Filter {Name -eq $OUmainS}
         Clear-Host
@@ -500,7 +500,26 @@ Function OUbuilder(){
                 if ($pathAsk2 -eq "") {
                 repetAsk
                 }else {
-                    repetAsk2
+                    pathAsk3
+                }
+        }
+        Function pathAsk3() {
+            Clear-Host
+            $pathAskU = Read-Host "Haluatko määritellä vielä ala ou:n vai jatkaa? m/j ? "
+            Switch ($pathAskU) {
+                j {repetAsk2}
+                m {pathAsk4}
+                default {pathAsk3}
+            }
+        }
+   
+        Function pathAsk4() {
+            Clear-Host
+            $pathAsk4 = Read-Host "Valitse ala ou "
+                if ($pathAsk2 -eq "") {
+                pathAsk4
+                }else {
+                    repetAsk3
                 }
         }
         Function repetAsk (){
@@ -536,7 +555,7 @@ Function OUbuilder(){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
                     $UserName = Read-Host "Syötä käytäjän nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk2, OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
+                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk2,OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
                    
                 }
                 OUbuilderMain
@@ -545,7 +564,226 @@ Function OUbuilder(){
             }
 
         }
+        Function repetAsk3 (){
+            Clear-Host
+            $repet = Read-Host "Kuinka monta Käyttäjää haluat?"   
+            if($repet -eq ""){
+                Clear-Host
+                Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                sleep -Seconds 2
+                ouRepetask
+            } elseif($repet -match '^\d{1,2}$'){
+                for ($i=1; $i -le $repet;$i++) {
+                    Clear-Host
+                    $UserName = Read-Host "Syötä käytäjän nimi "
+                    New-ADUser -Name "$UserName" -Path "OU=pathAsk4,OU=$pathAsk2, OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
+                    
+                }
+                OUbuilderMain
+            }else {
+            repetAsk
+            }
+
+        }
         DomainAsk
+    }
+    Function GroupMain() {
+        Function GroupAsk{
+            Function GroupDomainAsk {
+            Clear-Host
+            $OUdomain = Read-Host "Aseta domain"
+            $OUdomainParts = $OUdomain.Split(".")
+            $OUdomain0 = $OUdomainParts[0]
+            $OUdomain1 = $OUdomainParts[1]
+                if($OUdomain -eq ""){
+                Clear-Host
+                Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                sleep -Seconds 2
+                GroupDomainAsk
+                }else{
+                 GroupPathAsk
+                    }
+            }
+            Function GroupPathAsk {
+                Clear-Host
+                $GroupPath1 = Read-Host "Valitse pää ou "
+                    if ($GroupPath1 -eq ""){
+                        Clear-Host
+                        Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                        sleep -Seconds 1
+                        GroupPathAsk
+                    }else{
+                        GroupPathAsk2
+                          }
+            }
+            Function GroupPathAsk2 {
+                Clear-Host
+                $GroupPath2 = Read-Host "Valitse ala ou mihin haluat ryhmän "
+                    if ($GroupPath2 -eq ""){
+                        Clear-Host
+                        Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                        sleep -Seconds 1
+                        GroupPathAsk2
+                    }else {
+                        GroupPathAsk3
+                    }
+            }
+            Function GroupPathAsk3 {
+                Clear-Host
+                $GroupPathS = Read-Host "Haluatko määrittää $GroupPath2 alle vielä ala ou:n k/e? "
+                switch ($GroupPathS) {
+                    k {GroupPathAsk4}
+                    e {GroupRepet1} #setup
+                    default {GroupPathAsk3}
+                }
+            }
+            Function GroupPathAsk4 {
+                Clear-Host
+                $GroupPath3 = Read-Host "Kirjoita ala ou "
+                    if ($GroupPath3 -eq ""){
+                        Clear-Host
+                        Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                        sleep -Seconds 1
+                        GroupPathAsk4
+                    }else {
+                        GroupRepet2
+                    }
+            }
+            GroupDomainAsk
+            }
+            Function GroupRepet1 {
+                Clear-History
+                ##Write-Host "1"
+        $repet = Read-Host "Kuinka monta Ryhmää haluat?"   
+            if($repet -eq ""){
+                Clear-Host
+                Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                sleep -Seconds 2
+                GroupRepet1
+            } elseif($repet -match '^\d{1,2}$'){
+                for ($i=1; $i -le $repet;$i++) {
+                    $GroupNimi = Read-Host "Syötä ryhmän nimi"
+                    Function GroupCategoryS {
+                    Clear-Host
+                    Write-Host "Security Group tai Distribution Groups"
+                    Write-Host "Valitse etukirjaimen mukaan! Pienellä!" -ForegroundColor Yellow
+                    $GroupCategoryS = Read-Host "Valitse minkä tyypin ryhmän haluat luoda "
+                    switch ($GroupCategoryS){
+                        s {$GroupCategory = "Security"; GroupScopeS}
+                        d {$GroupCategory = "Distribution"; GroupScopeS}
+                        default {clear-host;GroupCategoryS}
+                        }
+                    }
+                    Function GroupScopeS {
+                    Clear-Host
+                    Write-Host "DomainLocal|Global|Universal"
+                    Write-Host "HUOM! Etukirjain ja pienellä!" -ForegroundColor Yellow
+                    $GroupScopeS = Read-Host "Valitse ryhmän vaikutus alue (d)(g)(u) "
+                        switch ($GroupScopeS){
+                            d {$GroupScope = "DomainLocal";GroupSAMaccNameAsk}
+                            g {$GroupScope = "Global";GroupSAMaccNameAsk}
+                            u {$GroupScope = "Universal";GroupSAMaccNameAsk}
+                            default {GroupScopeS}
+                        }
+                    }
+                    Function GroupSAMaccNameAsk {
+                        Clear-Host
+                        Write-Host "HUOM! SAM nimi voi olla vain yhteen!!" -ForegroundColor Yellow
+                        $GroupSamName = Read-Host "Valitse ryhmän sam nimi "
+                            if($GroupSamName -eq ""){
+                                Clear-Host
+                                Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                                sleep -Seconds 1
+                                GroupSAMaccNameAsk
+                            }else {
+                               GroupDisplayNameAsk 
+                            }
+                    }
+                    Function GroupDisplayNameAsk{
+                        Clear-Host
+                        Write-Host "Ryhmän näyttönimellä meinataan nimeä joka näkyy kun kirjaudut!"
+                        Write-Host " Ryhmän näyttönimi voi sisältää välejä sekä erikois merkkejä! " -ForegroundColor Yellow
+                        $GroupDisplayName = Read-Host "Valitse ryhmän näyttönimi "
+                            if ($GroupDisplayName -eq "") {
+                                GroupDisplayNameAsk
+                            }
+                    }
+                    GroupCategoryS
+                    New-ADGroup -Name "$GroupNimi" -SamAccountName $GroupSamName -GroupCategory $GroupCategory -GroupScope $GroupScope -DisplayName "$GroupDisplayName" -Path "OU=GroupPath2,OU=$GroupPath1,DC=$OUdomain0,DC=$OUdomain1"
+                    ##toiminnot vaatii Viimeistelyä ja testaamista!
+                }
+                OUbuilderMain
+            }else {
+            GroupRepet1
+            }
+            }
+            Function GroupRepet2 {
+                 Clear-History
+                 ##Write-Host "2"
+        $repet = Read-Host "Kuinka monta Ryhmää haluat?"   
+            if($repet -eq ""){
+                Clear-Host
+                Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                sleep -Seconds 2
+                GroupRepet1
+            } elseif($repet -match '^\d{1,2}$'){
+                for ($i=1; $i -le $repet;$i++) {
+                    $GroupNimi = Read-Host "Syötä ryhmän nimi"
+                    Function GroupCategoryS {
+                    Clear-Host
+                    Write-Host "Security Group tai Distribution Groups"
+                    Write-Host "Valitse etukirjaimen mukaan! Pienellä!" -ForegroundColor Yellow
+                    $GroupCategoryS = Read-Host "Valitse minkä tyypin ryhmän haluat luoda "
+                    switch ($GroupCategoryS){
+                        s {$GroupCategory = "Security"; GroupScopeS}
+                        d {$GroupCategory = "Distribution"; GroupScopeS}
+                        default {clear-host;GroupCategoryS}
+                        }
+                    }
+                    Function GroupScopeS {
+                    Clear-Host
+                    Write-Host "DomainLocal|Global|Universal"
+                    Write-Host "HUOM! Etukirjain ja pienellä!" -ForegroundColor Yellow
+                    $GroupScopeS = Read-Host "Valitse ryhmän vaikutus alue (d)(g)(u) "
+                        switch ($GroupScopeS){
+                            d {$GroupScope = "DomainLocal";GroupSAMaccNameAsk}
+                            g {$GroupScope = "Global";GroupSAMaccNameAsk}
+                            u {$GroupScope = "Universal";GroupSAMaccNameAsk}
+                            default {GroupScopeS}
+                        }
+                    }
+                    Function GroupSAMaccNameAsk {
+                        Clear-Host
+                        Write-Host "HUOM! SAM nimi voi olla vain yhteen!!" -ForegroundColor Yellow
+                        $GroupSamName = Read-Host "Valitse ryhmän sam nimi "
+                            if($GroupSamName -eq ""){
+                                Clear-Host
+                                Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+                                sleep -Seconds 1
+                                GroupSAMaccNameAsk
+                            }else {
+                               GroupDisplayNameAsk 
+                            }
+                    }
+                    Function GroupDisplayNameAsk{
+                        Clear-Host
+                        Write-Host "Ryhmän näyttönimellä meinataan nimeä joka näkyy kun kirjaudut!"
+                        Write-Host " Ryhmän näyttönimi voi sisältää välejä sekä erikois merkkejä! " -ForegroundColor Yellow
+                        $GroupDisplayName = Read-Host "Valitse ryhmän näyttönimi "
+                            if ($GroupDisplayName -eq "") {
+                                GroupDisplayNameAsk
+                            }
+                    }
+                    GroupCategoryS
+                    New-ADGroup -Name "$GroupNimi" -SamAccountName $GroupSamName -GroupCategory $GroupCategory -GroupScope $GroupScope -DisplayName "$GroupDisplayName" -Path "OU=GroupPath3,OU=GroupPath2,OU=$GroupPath1,DC=$OUdomain0,DC=$OUdomain1"
+                    ##toiminnot vaatii Viimeistelyä ja testaamista!
+                }
+                OUbuilderMain
+            }else {
+            GroupRepet1
+            }
+            }
+        GroupAsk
     }
 OUbuilderMain
 }
