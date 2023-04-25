@@ -1,35 +1,36 @@
+Ôªø
 Function Main() {
 $ComputerIP = (Test-Connection -ComputerName $env:computername -count 1).ipv4address.IPAddressToString
 Clear-Host
 Write-Host " ___________________________________________ "
-Write-host " |Valitse asetukset mitk‰ haluat m‰‰ritt‰‰!| "
+Write-host " |Valitse asetukset mitk√§ haluat m√§√§ritt√§√§!| "
 Write-Host " |_________________________________________| "
 Write-Host " | Name:$env:COMPUTERNAME | IP:$ComputerIP     | "
 Write-Host "<------------------------------------------->"
 Write-Host " | 1. Palvelimen valmistelu                | "
 Write-Host " | 2. Active-Driectory pystytys            | "
-Write-Host " | 3. Lis‰ominaisuudet                     | "
+Write-Host " | 3. Lis√§ominaisuudet                     | "
 Write-Host " | 4. Poistu                               | "
 Write-Host " | 5. Versio                               | "
 Write-Host " |-----------------------------------------| "
 $valintaS = Read-Host " |"
- Switch ($valintaS){
-    1 {Clear-Host;Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green; sleep -Seconds 2; hostAsk }
-    2 {Clear-Host;Write-Host "Aloitetaan Active-Directory pystytyst‰!" -ForegroundColor Green; sleep -Seconds 2; adASK}
-    3 {Lis‰valikko}
-    4 {Clear-Host;Write-Host "Poistutaan!" -ForegroundColor Red; sleep -Seconds 2; Exit}
+Switch ($valintaS){
+    1 {Clear-Host;Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green; Start-sleep -Seconds 1.5; hostAsk }
+    2 {Clear-Host;Write-Host "Aloitetaan Active-Directory pystytyst√§!" -ForegroundColor Green; Start-sleep -Seconds 1.5; adASK}
+    3 {Lis√§valikko}
+    4 {Clear-Host;Write-Host "Poistutaan!" -ForegroundColor Red; Start-sleep -Seconds 1.5; Exit}
     5 {versioControl}
     default {Main}
- }
- }
+}
+}
 
 Function hostAsk(){
 Clear-Host
 $ComputerName = Read-host "Ennen asennusta aseta koneen nimi"
     if($ComputerName -eq ""){
         Clear-Host
-        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-        sleep -Seconds 2
+        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+        Start-sleep -Seconds 1.5
         hostAsk
     }else {
     Networkask
@@ -41,16 +42,16 @@ Clear-Host
 hostAsk
 }else {
 Clear-Host
-$vastausUudelleenS= Read-Host "Haluatko palata p‰‰valikkoon vai sulkea ohjelman? p/s"
+$vastausUudelleenS= Read-Host "Haluatko palata p√§√§valikkoon vai sulkea ohjelman? p/s"
 if($vastausUudelleenS -eq "p" ){
 Clear-Host
-Write-Host "Ohjataan p‰‰valikkoon!" -ForegroundColor Green
+Write-Host "Ohjataan p√§√§valikkoon!" -ForegroundColor Green
 Main
 }
 if($vastausUudelleenS -eq "s"){
 Clear-Host
 Write-Host "Suljetaan ohjelma!" -ForegroundColor Red
-sleep -Seconds 2
+Start-sleep -Seconds 1.5
 Exit
 }
 }
@@ -62,8 +63,8 @@ $InterFaceINDEX = Read-Host "Laita Verkko kortin indexi tai nimi"
 Clear-Host
 if($InterFaceINDEX -eq "") {
     Clear-Host
-    Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-    sleep -Seconds 2
+    Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+    Start-sleep -Seconds 1.5
     Clear-Host
     adapterSelect
 }else {
@@ -75,8 +76,8 @@ Function ComputeripS(){
 $ComputerIP = Read-Host "Aseta staattinen osoite "
 if($ComputerIP -eq "") {
 Clear-Host
-Write-Host "T‰m‰ kohta ei voi olla tyhj‰!" -ForegroundColor Red
-sleep -Seconds 2
+Write-Host "T√§m√§ kohta ei voi olla tyhj√§!" -ForegroundColor Red
+Start-sleep -Seconds 1.5
 Clear-Host
 ComputeripS
 }else {
@@ -87,8 +88,8 @@ Function subnetS(){
 $Subnetprefix = Read-Host "Aseta subnet prefix "
 if($Subnetprefix -eq ""){
 Clear-Host
-Write-Host "T‰t‰ osiota ei voi j‰tt‰‰ tyhj‰ksi!" -ForegroundColor Red
-sleep -Seconds 2
+Write-Host "T√§t√§ osiota ei voi j√§tt√§√§ tyhj√§ksi!" -ForegroundColor Red
+Start-sleep -Seconds 1.5
 Clear-Host
 subnetS
 }elseif($Subnetprefix -in 8..30) {
@@ -96,7 +97,7 @@ gateawayS
 }else{
 Clear-Host
 Write-Host "Valitse kunnon Subnetprefix" -ForegroundColor Red
-sleep -Seconds 2
+Start-sleep -Seconds 1.5
 Clear-Host
 subnetS
 }
@@ -109,33 +110,33 @@ $gateawayAnwser = Read-host "Haluatko muuttaa staattisen osoitteen vai gateaway 
     if($gateawayAnwser -eq "s") {
     Clear-Host
     Write-Host "Sinut ohjataan staatisen osoitteen asettamiseen!" -ForegroundColor Green
-    sleep -Seconds 2
+    Start-sleep -Seconds 1.5
     Clear-Host
     ComputeripS
     }elseif($gateawayAnwser -eq "g"){
     Clear-Host
     Write-Host "Sinut ohjataan gateaway asettamiseen!" -ForegroundColor Green
-    sleep -Seconds 2
+    Start-sleep -Seconds 1.5
     Clear-Host
     gateawayS
     }elseif($gateawayAnwser -eq ""){
     Clear-Host
-    Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-    sleep -Seconds 2
+    Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+    Start-sleep -Seconds 1.5
     Clear-Host
     checkgatawayC
     }}
 If($ComputerIP -eq $GatewayIP){
 Write-Host "Virheellinen osoite! $ComputerIP ja $GatewayIP ovat samat!!" -ForegroundColor Red
 Write-Host "Aseta asetukset uudelleen!" -ForegroundColor Red
-sleep -Seconds 2
+Start-sleep -Seconds 1.5
 Clear-Host
 checkgatawayC
 }else {
 if($GatewayIP -eq ""){
 Clear-Host
-Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-sleep -Seconds 2
+Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+Start-sleep -Seconds 1.5
 Clear-Host
 gateawayS
 }else {
@@ -145,17 +146,17 @@ gateawayS
 }
 Function dnsAsk(){
     Clear-Host
- $dnsIP = Read-Host "Syˆt‰ DNS palvelin osoitteet oletuksena 127.0.0.1 | "
+$dnsIP = Read-Host "Sy√∂t√§ DNS palvelin osoitteet oletuksena 127.0.0.1 | "
     If($dnsIP -eq ""){
         $dnsIP = '127.0.0.1'
         dnsASK2
-                     }else{
+                    }else{
                             dnsASK2
-                          }
+                        }
 }
 Function dnsASK2(){
     Clear-Host
-    $dnsIP2 = Read-Host "Syˆt‰ toinen dns osoite tai jatka painamalla enter | "
+    $dnsIP2 = Read-Host "Sy√∂t√§ toinen dns osoite tai jatka painamalla enter | "
         if($dnsIP2 -eq ""){
             asetuksetDATA
         }else {
@@ -189,68 +190,71 @@ Write-Host "Aloitetaan konfiguraatiota!" -ForegroundColor Green
 timeask
 }else {
 Clear-Host
-Write-Host "Et halunnut aloittaa konfiguraatio skripti‰!" -ForegroundColor Red
+Write-Host "Et halunnut aloittaa konfiguraatio skripti√§!" -ForegroundColor Red
 $reask = Read-Host "Haluatko aloittaa sen uudelleen? k/e"
 UudelleenSuoritus
 }
 }
 Function timeask(){
-$time = Read-Host "Aseta nopeus toimintojen v‰lill‰ sekunnissa, paina enter tai syˆt‰ lukema. Normaalisti 5 sekuntia!"
-if ( $time -in 1..10)      {
+param(
+    $tim
+)
+$timeto = 5
+$time = Read-Host "Aseta nopeus toimintojen v√§lill√§ sekunnissa, paina enter tai sy√∂t√§ lukema. Normaalisti 5 sekuntia!"
+if ( $time -in 1..10)
+    {
     $timeto = $time
-    setup-script
+    Start-script
 }else {
     $timeto = 5
-    setup-script
+    Start-script
 }
 }
-Function setup-script() {
+Function Start-script() {
 Clear-Host
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
 
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan nime‰: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
-Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
-sleep -Seconds $timeto
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
-sleep -Seconds $timeto
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
-sleep -Seconds $timeto
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan nime√§: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
+    Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
+Start-sleep -Seconds $timeto
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
 #Verkko kohta!
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-# Tarkistaa Interface syˆttˆ muodon
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+# Tarkistaa Interface sy√∂tt√∂ muodon
 If($InterFaceINDEX -match "^\d{1,2}$"){
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
- Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 60
- Set-DnsClientServerAddress -InterfaceIndex $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 70
- New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+    Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 60
+    Set-DnsClientServerAddress -InterfaceIndex $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 70
+    New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
 }else {
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
- Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 60
- Set-DnsClientServerAddress -InterfaceAlias $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 70
- New-NetIPAddress -InterfaceAlias $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
- Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+    Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 60
+    Set-DnsClientServerAddress -InterfaceAlias $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 70
+    New-NetIPAddress -InterfaceAlias $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
 }
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
-sleep -Seconds $timeto
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
+Start-sleep -Seconds $timeto
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
 #Verkko kohta loppuu!
 
 
 
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-Install-WindowsFeature ñConfigurationFilePath DeploymentConfigTemplate.xml
-Write-Progress -Activity "tehd‰‰n asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
-sleep -Seconds $timeto
-Write-Progress -Activity "Tehd‰‰n asetuksia" -Status "Asetukset tehty! K‰ynnistet‰‰n uudelleen!" -Id 1 -Completed
-Write-Output "Kone k‰ynnistyy uudelleen 10 sekunnin p‰‰st‰!"
-sleep -Seconds 10
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+    Install-WindowsFeature ‚ÄìConfigurationFilePath DeploymentConfigTemplate.xml
+Write-Progress -Activity "tehd√§√§n asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
+Start-sleep -Seconds $timeto
+Write-Progress -Activity "Tehd√§√§n asetuksia" -Status "Asetukset tehty! K√§ynnistet√§√§n uudelleen!" -Id 1 -Completed
+Write-Output "Kone k√§ynnistyy uudelleen 10 sekunnin p√§√§st√§!"
+Start-sleep -Seconds 10
 Restart-Computer -Force
 }
 Function adsetup(){
@@ -260,60 +264,58 @@ Try{
     Write-Host "Active Directory Domain Services asetukset on asetettu ilman ongelmia!" -ForegroundColor Green
     }
 Catch{
-     Write-Warning -Message $("Virhe tuli asetuksien asetuksessa!: "+ $_.Exception.Message)
-     Break;
-     }
+    Write-Warning -Message $("Virhe tuli asetuksien asetuksessa!: "+ $_.Exception.Message)
+    Break;
+    }
 
-# K‰ynnist‰ uudelleen ja aseta asetukset!
-Write-Host "Kone k‰ynnistyy uudelleen 30 sekunnin p‰‰st‰!"
-Sleep 30
+# K√§ynnist√§ uudelleen ja aseta asetukset!
+Write-Host "Kone k√§ynnistyy uudelleen 30 sekunnin p√§√§st√§!"
+Start-sleep 30
 
 Try{
     Restart-Computer -ComputerName $env:computername -ErrorAction Stop
-    Write-Host "Kone k‰ynnistyy uudelleen!!" -ForegroundColor Green
+    Write-Host "Kone k√§ynnistyy uudelleen!!" -ForegroundColor Green
     }
 Catch{
-     Write-Warning -Message $("Virhe tuli k‰ynnist‰ess‰ konetta uudelleen! $($env:computername). Error: "+ $_.Exception.Message)
-     Break;
-     }
+    Write-Warning -Message $("Virhe tuli k√§ynnist√§ess√§ konetta uudelleen! $($env:computername). Error: "+ $_.Exception.Message)
+    Break;
+    }
 }
 Function adASK(){
 Function adask1(){
 $DomainName = Read-Host "Aseta toimialueen nimi"
 if($DomainName -eq ""){
 Clear-Host
-Write-Host "Toimialueen nime‰ ei ole laitettu!" -ForegroundColor Red
+Write-Host "Toimialueen nime√§ ei ole laitettu!" -ForegroundColor Red
 Clear-Host
 adask1
 }else {
 adsetup
 }
 }
-  Clear-Host
-  adask1
+Clear-Host
+adask1
 }
 Function versioControl(){
 Clear-Host
-Write-Host " Versio: 0.xx (Test-version 0.82)
-By: Eetu Heino
----------------- 
-Tervetuloa K‰ytt‰m‰‰n automoitua
-Microsoft palvelimen konfiguraatio
-          tyˆkalua"  
-$valintaVersio = Read-Host "Haluatko Takaisin p‰‰valikkoon? k/e |"
+Write-host "           Asetus valikko! "
+write-host "       Versio: x.xx(v0.82)Beta "
+write-host "           By: Eetu Heino "
+write-host " Active-Directory automointi ty√∂kalu "
+$valintaVersio = Read-Host "Haluatko Takaisin p√§√§valikkoon? k/e |"
 #Palautus Functio!
 if($valintaVersio -eq "k"){
 Write-Host "Palataan!"
-sleep -Seconds 2
+Start-sleep -Seconds 1.5
 Clear-Host
 Main
 }elseif($valintaVersio = "e"){
-Write-Host "Haluatko poistua skriptist‰ kokonaan?" -ForegroundColor Red
+Write-Host "Haluatko poistua skriptist√§ kokonaan?" -ForegroundColor Red
 $valintaVersio = Read-Host "k/e|"
 if($valintaVersio -eq "k"){
 Clear-Host
 Write-Host "Poistutaan!"
-sleep -Seconds 2
+Start-sleep -Seconds 1.5
 Clear-Host
 exit
 }else {
@@ -325,16 +327,16 @@ versioControl
 
 
 }
-Function Lis‰valikko(){
+Function Lis√§valikko(){
 Function MainMenu(){
 Clear-Host
-Write-Host "  Valitse ominaisuus mit‰ haluat k‰ytt‰‰: "
+Write-Host "  Valitse ominaisuus mit√§ haluat k√§ytt√§√§: "
 Write-Host " ________________________________________ "
 write-host " |1. Automaattinen OU rakentaja         | "
 Write-Host " |                                      | "
 write-host " |2. Group Policy importer              | "
 Write-Host " |                                      | "
-write-host " |3. Tyˆaseman valmistelu ja liitt‰minen| "
+write-host " |3. Ty√∂aseman valmistelu ja liitt√§minen| "
 Write-Host " |______________________________________| "
 Write-Host " |            |"
 write-host " |4. Takaisin |"
@@ -342,8 +344,8 @@ Write-Host " |____________|"
 $OmiVa = Read-Host " |"
 
 switch($OmiVa){
-    1 {Clear-Host; Write-Host "Ominaisuus on Beta testauksessa!" -ForegroundColor Yellow; sleep -Seconds 2; OUbuilder}
-    2 {Clear-Host; Write-Host "ominaisuutta ei ole viel‰!" -ForegroundColor Red; sleep -Seconds 2; MainMenu}
+    1 {Clear-Host; Write-Host "Ominaisuus on Beta testauksessa!" -ForegroundColor Yellow; Start-sleep -Seconds 1.5; OUbuilder}
+    2 {Clear-Host; Write-Host "ominaisuutta ei ole viel√§!" -ForegroundColor Red; Start-sleep -Seconds 1.5; MainMenu}
     3 {workstationAsk}
     4 {Main}
     default {MainMenu}
@@ -359,7 +361,7 @@ Function OUbuilder(){
         Write-Host " |_______________|"
         Write-Host " ___________________________ "
         Write-Host " |1. Pika ou rakennus      | "
-        Write-Host " |2. Pika k‰ytt‰jien lis‰ys| "
+        Write-Host " |2. Pika k√§ytt√§jien lis√§ys| "
         Write-Host " |3. Pika ryhmien luonti   | "
         Write-Host " |4. Takaisin              | "
         Write-Host " |-------------------------- "
@@ -368,7 +370,7 @@ Function OUbuilder(){
             1 {OUask}
             2 {UserAsk}
             3 {GroupMain}
-            4 {Lis‰valikko}
+            4 {Lis√§valikko}
         }
     }
     Function OUask(){
@@ -380,21 +382,20 @@ Function OUbuilder(){
         $OUdomain1 = $OUdomainParts[1]
             if($OUdomain -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 OUdomainAsk
             }else{
-                 OUmainAsk
+                OUmainAsk
             }
-        
         }
         Function OUmainAsk(){
         Clear-Host
-        $OUmainS = Read-Host "Kirjoita p‰‰/root ou:n nimi"
+        $OUmainS = Read-Host "Kirjoita p√§√§/root ou:n nimi"
             if($OUmainS -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 OUmainAsk
             }else{
                 OUsetup
@@ -402,11 +403,11 @@ Function OUbuilder(){
         }
         Function OUmainAsk2(){
         Clear-Host
-        $OUmainS2 = Read-Host "Kirjoita ou:n nimi mink‰ alle haluat rakentaa? "
+        $OUmainS2 = Read-Host "Kirjoita ou:n nimi mink√§ alle haluat rakentaa? "
             if($OUmainS2 -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 OUmainAsk2
             }else{
                 ouRepetask2
@@ -414,15 +415,15 @@ Function OUbuilder(){
         }
         Function ouRepetask2($nimetDATA, $OUnim){
         Clear-History
-        $repet = Read-Host "Kuinka monta ala ou haluat?"   
+        $repet = Read-Host "Kuinka monta ala ou haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 ouRepetask2
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
-                    $OUnim = Read-Host "Syˆt‰ ala ou:n nimi"
+                    $OUnim = Read-Host "Sy√∂t√§ ala ou:n nimi"
                     New-ADOrganizationalUnit -Name $OUnim -Path "OU=$OUmainS2,OU=$OUmainS,DC=$OUdomain0,DC=$OUdomain1"
                 }
                 OUbuilderMain
@@ -432,16 +433,16 @@ Function OUbuilder(){
         }
         Function ouRepetask($nimetDATA, $OUnim){
         Clear-History
-        $repet = Read-Host "Kuinka monta ala ou haluat?"   
+        $repet = Read-Host "Kuinka monta ala ou haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 ouRepetask
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
-                    $OUnim = Read-Host "Syˆt‰ ala ou:n nimi"
+                    $OUnim = Read-Host "Sy√∂t√§ ala ou:n nimi"
                     New-ADOrganizationalUnit -Name $OUnim -Path "OU=$OUmainS,DC=$OUdomain0,DC=$OUdomain1"
                 }
                 OUbuilderMain
@@ -454,22 +455,22 @@ Function OUbuilder(){
     Function OUsetup(){
         $OUExists = Get-ADOrganizationalUnit -Filter {Name -eq $OUmainS}
         Clear-Host
-        Write-Progress -Activity "OU rakennus" -Status "Tehd‰‰n OU rakennusta!" -Id 1 -PercentComplete 0
+        Write-Progress -Activity "OU rakennus" -Status "Tehd√§√§n OU rakennusta!" -Id 1 -PercentComplete 0
         Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -PercentComplete 50
-        sleep -Seconds 1
+        Start-sleep -Seconds 1
             if ($OUExists){
-               Clear-Host
-               sleep -Seconds 1
-               Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -Completed
-               Write-Progress -Activity "OU rakennus" -Status "Tehd‰‰n OU rakennusta!" -Id 1 -Completed
-               OUmainAsk2
+            Clear-Host
+            Start-sleep -Seconds 1
+            Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -Completed
+            Write-Progress -Activity "OU rakennus" -Status "Tehd√§√§n OU rakennusta!" -Id 1 -Completed
+            OUmainAsk2
             }else{
         Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -Completed
-        Write-Progress -Activity "OU rakennus" -Status "Tehd‰‰n p‰‰ OU!" -Id 2 -ParentId 1 -PercentComplete 0
+        Write-Progress -Activity "OU rakennus" -Status "Tehd√§√§n p√§√§ OU!" -Id 2 -ParentId 1 -PercentComplete 0
         New-ADOrganizationalUnit -Name "$OUmainS" -Path "DC=$OUdomain0,DC=$OUdomain1"
-        Write-Progress -Activity "OU rakennus" -Status "Tehd‰‰n p‰‰ OU!" -Id 2 -ParentId 1 -Completed
-        Write-Progress -Activity "OU rakennus" -Status "Tehd‰‰n OU rakennusta!" -Id 1 -PercentComplete 10
-        Write-Progress -Activity "OU rakennus" -Status "Tehd‰‰n OU rakennusta!" -Id 1 -Completed
+        Write-Progress -Activity "OU rakennus" -Status "Tehd√§√§n p√§√§ OU!" -Id 2 -ParentId 1 -Completed
+        Write-Progress -Activity "OU rakennus" -Status "Tehd√§√§n OU rakennusta!" -Id 1 -PercentComplete 10
+        Write-Progress -Activity "OU rakennus" -Status "Tehd√§√§n OU rakennusta!" -Id 1 -Completed
                     }
     }
     Function UserAsk(){
@@ -482,16 +483,16 @@ Function OUbuilder(){
         $OUdomain1 = $OUdomainParts[1]
             if($OUdomain -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 DomainAsk
             }else{
-                 pathAsk
+                pathAsk
             }
         }
         Function pathAsk() {
             Clear-Host
-            $pathAsk = Read-Host "Mink‰ ou:n alle haluat kyseiset k‰ytt‰j‰t "
+            $pathAsk = Read-Host "Mink√§ ou:n alle haluat kyseiset k√§ytt√§j√§t "
             pathAsk2
         }
         Function pathAsk2() {
@@ -505,14 +506,13 @@ Function OUbuilder(){
         }
         Function pathAsk3() {
             Clear-Host
-            $pathAskU = Read-Host "Haluatko m‰‰ritell‰ viel‰ ala ou:n vai jatkaa? m/j ? "
+            $pathAskU = Read-Host "Haluatko m√§√§ritell√§ viel√§ ala ou:n vai jatkaa? m/j ? "
             Switch ($pathAskU) {
                 j {repetAsk2}
                 m {pathAsk4}
                 default {pathAsk3}
             }
         }
-   
         Function pathAsk4() {
             Clear-Host
             $pathAsk4 = Read-Host "Valitse ala ou "
@@ -524,18 +524,17 @@ Function OUbuilder(){
         }
         Function repetAsk (){
             Clear-Host
-           $repet = Read-Host "Kuinka monta K‰ytt‰j‰‰ haluat?"   
+            $repet = Read-Host "Kuinka monta K√§ytt√§j√§√§ haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 ouRepetask
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
-                    $UserName = Read-Host "Syˆt‰ k‰yt‰j‰n nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "K‰ytt‰j‰n salasana ") -Enable $true
-                   
+                    $UserName = Read-Host "Sy√∂t√§ k√§yt√§j√§n nimi "
+                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "K√§ytt√§j√§n salasana ") -Enable $true
                 }
                 OUbuilderMain
             }else {
@@ -545,18 +544,17 @@ Function OUbuilder(){
         }
         Function repetAsk2 (){
             Clear-Host
-           $repet = Read-Host "Kuinka monta K‰ytt‰j‰‰ haluat?"   
+            $repet = Read-Host "Kuinka monta K√§ytt√§j√§√§ haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 ouRepetask
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
-                    $UserName = Read-Host "Syˆt‰ k‰yt‰j‰n nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk2,OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "K‰ytt‰j‰n salasana ") -Enable $true
-                   
+                    $UserName = Read-Host "Sy√∂t√§ k√§yt√§j√§n nimi "
+                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk2,OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "K√§ytt√§j√§n salasana ") -Enable $true
                 }
                 OUbuilderMain
             }else {
@@ -566,18 +564,17 @@ Function OUbuilder(){
         }
         Function repetAsk3 (){
             Clear-Host
-            $repet = Read-Host "Kuinka monta K‰ytt‰j‰‰ haluat?"   
+            $repet = Read-Host "Kuinka monta K√§ytt√§j√§√§ haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 ouRepetask
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
-                    $UserName = Read-Host "Syˆt‰ k‰yt‰j‰n nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=pathAsk4,OU=$pathAsk2, OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "K‰ytt‰j‰n salasana ") -Enable $true
-                    
+                    $UserName = Read-Host "Sy√∂t√§ k√§yt√§j√§n nimi "
+                    New-ADUser -Name "$UserName" -Path "OU=pathAsk4,OU=$pathAsk2, OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "K√§ytt√§j√§n salasana ") -Enable $true
                 }
                 OUbuilderMain
             }else {
@@ -597,32 +594,32 @@ Function OUbuilder(){
             $OUdomain1 = $OUdomainParts[1]
                 if($OUdomain -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 GroupDomainAsk
                 }else{
-                 GroupPathAsk
+                GroupPathAsk
                     }
             }
             Function GroupPathAsk {
                 Clear-Host
-                $GroupPath1 = Read-Host "Valitse p‰‰ ou "
+                $GroupPath1 = Read-Host "Valitse p√§√§ ou "
                     if ($GroupPath1 -eq ""){
                         Clear-Host
-                        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                        sleep -Seconds 1
+                        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                        Start-sleep -Seconds 1
                         GroupPathAsk
                     }else{
                         GroupPathAsk2
-                          }
+                        }
             }
             Function GroupPathAsk2 {
                 Clear-Host
-                $GroupPath2 = Read-Host "Valitse ala ou mihin haluat ryhm‰n "
+                $GroupPath2 = Read-Host "Valitse ala ou mihin haluat ryhm√§n "
                     if ($GroupPath2 -eq ""){
                         Clear-Host
-                        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                        sleep -Seconds 1
+                        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                        Start-sleep -Seconds 1
                         GroupPathAsk2
                     }else {
                         GroupPathAsk3
@@ -630,7 +627,7 @@ Function OUbuilder(){
             }
             Function GroupPathAsk3 {
                 Clear-Host
-                $GroupPathS = Read-Host "Haluatko m‰‰ritt‰‰ $GroupPath2 alle viel‰ ala ou:n k/e? "
+                $GroupPathS = Read-Host "Haluatko m√§√§ritt√§√§ $GroupPath2 alle viel√§ ala ou:n k/e? "
                 switch ($GroupPathS) {
                     k {GroupPathAsk4}
                     e {GroupRepet1} #setup
@@ -642,8 +639,8 @@ Function OUbuilder(){
                 $GroupPath3 = Read-Host "Kirjoita ala ou "
                     if ($GroupPath3 -eq ""){
                         Clear-Host
-                        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                        sleep -Seconds 1
+                        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                        Start-sleep -Seconds 1
                         GroupPathAsk4
                     }else {
                         GroupRepet2
@@ -654,20 +651,20 @@ Function OUbuilder(){
             Function GroupRepet1 {
                 Clear-History
                 ##Write-Host "1"
-        $repet = Read-Host "Kuinka monta Ryhm‰‰ haluat?"   
+        $repet = Read-Host "Kuinka monta Ryhm√§√§ haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 GroupRepet1
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
-                    $GroupNimi = Read-Host "Syˆt‰ ryhm‰n nimi"
+                    $GroupNimi = Read-Host "Sy√∂t√§ ryhm√§n nimi"
                     Function GroupCategoryS {
                     Clear-Host
                     Write-Host "Security Group tai Distribution Groups"
-                    Write-Host "Valitse etukirjaimen mukaan! Pienell‰!" -ForegroundColor Yellow
-                    $GroupCategoryS = Read-Host "Valitse mink‰ tyypin ryhm‰n haluat luoda "
+                    Write-Host "Valitse etukirjaimen mukaan! Pienell√§!" -ForegroundColor Yellow
+                    $GroupCategoryS = Read-Host "Valitse mink√§ tyypin ryhm√§n haluat luoda "
                     switch ($GroupCategoryS){
                         s {$GroupCategory = "Security"; GroupScopeS}
                         d {$GroupCategory = "Distribution"; GroupScopeS}
@@ -677,8 +674,8 @@ Function OUbuilder(){
                     Function GroupScopeS {
                     Clear-Host
                     Write-Host "DomainLocal|Global|Universal"
-                    Write-Host "HUOM! Etukirjain ja pienell‰!" -ForegroundColor Yellow
-                    $GroupScopeS = Read-Host "Valitse ryhm‰n vaikutus alue (d)(g)(u) "
+                    Write-Host "HUOM! Etukirjain ja pienell√§!" -ForegroundColor Yellow
+                    $GroupScopeS = Read-Host "Valitse ryhm√§n vaikutus alue (d)(g)(u) "
                         switch ($GroupScopeS){
                             d {$GroupScope = "DomainLocal";GroupSAMaccNameAsk}
                             g {$GroupScope = "Global";GroupSAMaccNameAsk}
@@ -689,28 +686,28 @@ Function OUbuilder(){
                     Function GroupSAMaccNameAsk {
                         Clear-Host
                         Write-Host "HUOM! SAM nimi voi olla vain yhteen!!" -ForegroundColor Yellow
-                        $GroupSamName = Read-Host "Valitse ryhm‰n sam nimi "
+                        $GroupSamName = Read-Host "Valitse ryhm√§n sam nimi "
                             if($GroupSamName -eq ""){
                                 Clear-Host
-                                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                                sleep -Seconds 1
+                                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                                Start-sleep -Seconds 1
                                 GroupSAMaccNameAsk
                             }else {
-                               GroupDisplayNameAsk 
+                            GroupDisplayNameAsk
                             }
                     }
                     Function GroupDisplayNameAsk{
                         Clear-Host
-                        Write-Host "Ryhm‰n n‰yttˆnimell‰ meinataan nime‰ joka n‰kyy kun kirjaudut!"
-                        Write-Host " Ryhm‰n n‰yttˆnimi voi sis‰lt‰‰ v‰lej‰ sek‰ erikois merkkej‰! " -ForegroundColor Yellow
-                        $GroupDisplayName = Read-Host "Valitse ryhm‰n n‰yttˆnimi "
+                        Write-Host "Ryhm√§n n√§ytt√∂nimell√§ meinataan nime√§ joka n√§kyy kun kirjaudut!"
+                        Write-Host " Ryhm√§n n√§ytt√∂nimi voi sis√§lt√§√§ v√§lej√§ sek√§ erikois merkkej√§! " -ForegroundColor Yellow
+                        $GroupDisplayName = Read-Host "Valitse ryhm√§n n√§ytt√∂nimi "
                             if ($GroupDisplayName -eq "") {
                                 GroupDisplayNameAsk
                             }
                     }
                     GroupCategoryS
                     New-ADGroup -Name "$GroupNimi" -SamAccountName $GroupSamName -GroupCategory $GroupCategory -GroupScope $GroupScope -DisplayName "$GroupDisplayName" -Path "OU=GroupPath2,OU=$GroupPath1,DC=$OUdomain0,DC=$OUdomain1"
-                    ##toiminnot vaatii Viimeistely‰ ja testaamista!
+                    ##toiminnot vaatii Viimeistely√§ ja testaamista!
                 }
                 OUbuilderMain
             }else {
@@ -718,22 +715,22 @@ Function OUbuilder(){
             }
             }
             Function GroupRepet2 {
-                 Clear-History
-                 ##Write-Host "2"
-        $repet = Read-Host "Kuinka monta Ryhm‰‰ haluat?"   
+                Clear-History
+                ##Write-Host "2"
+        $repet = Read-Host "Kuinka monta Ryhm√§√§ haluat?"
             if($repet -eq ""){
                 Clear-Host
-                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                sleep -Seconds 2
+                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
                 GroupRepet1
             } elseif($repet -match '^\d{1,2}$'){
                 for ($i=1; $i -le $repet;$i++) {
-                    $GroupNimi = Read-Host "Syˆt‰ ryhm‰n nimi"
+                    $GroupNimi = Read-Host "Sy√∂t√§ ryhm√§n nimi"
                     Function GroupCategoryS {
                     Clear-Host
                     Write-Host "Security Group tai Distribution Groups"
-                    Write-Host "Valitse etukirjaimen mukaan! Pienell‰!" -ForegroundColor Yellow
-                    $GroupCategoryS = Read-Host "Valitse mink‰ tyypin ryhm‰n haluat luoda "
+                    Write-Host "Valitse etukirjaimen mukaan! Pienell√§!" -ForegroundColor Yellow
+                    $GroupCategoryS = Read-Host "Valitse mink√§ tyypin ryhm√§n haluat luoda "
                     switch ($GroupCategoryS){
                         s {$GroupCategory = "Security"; GroupScopeS}
                         d {$GroupCategory = "Distribution"; GroupScopeS}
@@ -743,8 +740,8 @@ Function OUbuilder(){
                     Function GroupScopeS {
                     Clear-Host
                     Write-Host "DomainLocal|Global|Universal"
-                    Write-Host "HUOM! Etukirjain ja pienell‰!" -ForegroundColor Yellow
-                    $GroupScopeS = Read-Host "Valitse ryhm‰n vaikutus alue (d)(g)(u) "
+                    Write-Host "HUOM! Etukirjain ja pienell√§!" -ForegroundColor Yellow
+                    $GroupScopeS = Read-Host "Valitse ryhm√§n vaikutus alue (d)(g)(u) "
                         switch ($GroupScopeS){
                             d {$GroupScope = "DomainLocal";GroupSAMaccNameAsk}
                             g {$GroupScope = "Global";GroupSAMaccNameAsk}
@@ -755,28 +752,28 @@ Function OUbuilder(){
                     Function GroupSAMaccNameAsk {
                         Clear-Host
                         Write-Host "HUOM! SAM nimi voi olla vain yhteen!!" -ForegroundColor Yellow
-                        $GroupSamName = Read-Host "Valitse ryhm‰n sam nimi "
+                        $GroupSamName = Read-Host "Valitse ryhm√§n sam nimi "
                             if($GroupSamName -eq ""){
                                 Clear-Host
-                                Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-                                sleep -Seconds 1
+                                Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+                                Start-sleep -Seconds 1
                                 GroupSAMaccNameAsk
                             }else {
-                               GroupDisplayNameAsk 
+                            GroupDisplayNameAsk
                             }
                     }
                     Function GroupDisplayNameAsk{
                         Clear-Host
-                        Write-Host "Ryhm‰n n‰yttˆnimell‰ meinataan nime‰ joka n‰kyy kun kirjaudut!"
-                        Write-Host " Ryhm‰n n‰yttˆnimi voi sis‰lt‰‰ v‰lej‰ sek‰ erikois merkkej‰! " -ForegroundColor Yellow
-                        $GroupDisplayName = Read-Host "Valitse ryhm‰n n‰yttˆnimi "
+                        Write-Host "Ryhm√§n n√§ytt√∂nimell√§ meinataan nime√§ joka n√§kyy kun kirjaudut!"
+                        Write-Host " Ryhm√§n n√§ytt√∂nimi voi sis√§lt√§√§ v√§lej√§ sek√§ erikois merkkej√§! " -ForegroundColor Yellow
+                        $GroupDisplayName = Read-Host "Valitse ryhm√§n n√§ytt√∂nimi "
                             if ($GroupDisplayName -eq "") {
                                 GroupDisplayNameAsk
                             }
                     }
                     GroupCategoryS
                     New-ADGroup -Name "$GroupNimi" -SamAccountName $GroupSamName -GroupCategory $GroupCategory -GroupScope $GroupScope -DisplayName "$GroupDisplayName" -Path "OU=GroupPath3,OU=GroupPath2,OU=$GroupPath1,DC=$OUdomain0,DC=$OUdomain1"
-                    ##toiminnot vaatii Viimeistely‰ ja testaamista!
+                    ##toiminnot vaatii Viimeistely√§ ja testaamista!
                 }
                 OUbuilderMain
             }else {
@@ -791,11 +788,11 @@ Function workstationAsk(){
 Function workstationInterfaceAsk(){
     Clear-Host
     Get-NetAdapter *
-    $workstationINT = Read-Host "Valitse verkkokortti mit‰ haluat k‰ytt‰‰ joko prefix tai nimi"
+    $workstationINT = Read-Host "Valitse verkkokortti mit√§ haluat k√§ytt√§√§ joko prefix tai nimi"
     if($workstationINT -eq ""){
     Clear-Host
-    Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-    sleep -Seconds 2
+    Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+    Start-sleep -Seconds 1.5
     Clear-Host
     workstationInterfaceAsk
     }else{
@@ -805,11 +802,11 @@ Function workstationInterfaceAsk(){
 }
 Function workstationIPAsk(){
     Clear-Host
-$workstationIP = Read-Host "Laita tyˆaseman staattinen osoite: "
+$workstationIP = Read-Host "Laita ty√∂aseman staattinen osoite: "
     If($workstationIP -eq ""){
         Clear-Host
-        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-        sleep -Seconds 2
+        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+        Start-sleep -Seconds 1.5
         workstationIPAsk
     }else {
     Clear-Host
@@ -821,8 +818,8 @@ Function workstationSubnetAsk(){
     $workstationSubnetPrefix = Read-Host "laita subnetin prefix"
         if($workstationSubnet -eq ""){
         Clear-Host
-        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-        sleep -Seconds 2
+        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+        Start-sleep -Seconds 1.5
         workstationSubnetAsk
         }else{
         workstationGateawayAsk
@@ -832,14 +829,14 @@ Function workstationGateawayAsk(){
     Clear-Host
 $workstationgateIP=Read-Host "Laita Gateaway osoite"
         if($workstationgateIP -eq ""){
-           Clear-Host
-           Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-           sleep -Seconds 2
-           Clear-Host
-           workstationGateawayAsk
+            Clear-Host
+            Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+            Start-sleep -Seconds 1.5
+            Clear-Host
+            workstationGateawayAsk
         }elseif($workstationgateIP -eq $workstationIP){
-           Clear-Host
-        $workstationTGAsk=Read-Host "Sinun tyˆaseman ja gateaway osoite on sama! kumman haluat vaihtaa? t/g|" -ForegroundColor Red
+            Clear-Host
+            $workstationTGAsk=Read-Host "Sinun ty√∂aseman ja gateaway osoite on sama! kumman haluat vaihtaa? t/g|" -ForegroundColor Red
                 If($workstationTGAsk -eq "t"){
                     Clear-Host
                     workstationIPAsk
@@ -852,7 +849,7 @@ $workstationgateIP=Read-Host "Laita Gateaway osoite"
                     if($workstationAnwser -eq "k"){
                         Clear-Host
                         Write-Host "Poistutaan ohjelmasta!" -ForegroundColor Red
-                        sleep -Seconds 2
+                        Start-sleep -Seconds 1.5
                     }elseif($workstationAnwser -eq "e"){
                         Clear-Host
                         MainMenu
@@ -864,11 +861,11 @@ $workstationgateIP=Read-Host "Laita Gateaway osoite"
 }
 Function workstationDNSask(){
     Clear-Host
-    $workstationDNS=Read-Host "Aseta tyˆaseman dns osoite"
+    $workstationDNS=Read-Host "Aseta ty√∂aseman dns osoite"
     if($workstationDNS -eq ""){
         Clear-Host
-        Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-        sleep -Seconds 2
+        Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+        Start-sleep -Seconds 1.5
         workstationDNSask
     }else {
     workstationDNSask2
@@ -883,30 +880,30 @@ $workstationDNS2=Read-Host "Aseta toinen dns osoite tai paina enter jatkaaksesi 
             workstationADask
         }else{
             Clear-Host
-            Write-Host "Tarkista syˆtt‰m‰si osoite!" -ForegroundColor Red
-            sleep -Seconds 2
+            Write-Host "Tarkista sy√∂tt√§m√§si osoite!" -ForegroundColor Red
+            Start-sleep -Seconds 1.5
             workstationDNSask2
         }
 }
 Function workstationADask(){
     Clear-Host
-    $workstationADname = Read-Host "laita domain nimi mihin haluat tyˆaseman liitt‰‰"
+    $workstationADname = Read-Host "laita domain nimi mihin haluat ty√∂aseman liitt√§√§"
         if($workstationADname -eq ""){
             Clear-Host
-            Write-Host "Et voi j‰tt‰‰ t‰t‰ tyhj‰ksi!" -ForegroundColor Red
-            sleep -Seconds 2
+            Write-Host "Et voi j√§tt√§√§ t√§t√§ tyhj√§ksi!" -ForegroundColor Red
+            Start-sleep -Seconds 1.5
             Clear-Host
             workstationADask
         }else{
-        ##Asetukset n‰ytet‰‰n lopuksi
+        ##Asetukset n√§ytet√§√§n lopuksi
         workstationDATA
         }
 }
 Function workstationDATA(){
-##T‰m‰ Functio muokkaa datan taulukoksi!
+##T√§m√§ Functio muokkaa datan taulukoksi!
 ## Taulukko talletetaan DATA osioon!
 $workstationDATA =@(
-    ## Taulukosta tehd‰‰n kustom objekti
+    ## Taulukosta tehd√§√§n kustom objekti
         [PSCustomObject]@{
             Verkkokortti = $workstationINT
             IP = $workstationIP
@@ -921,12 +918,12 @@ $workstationDATA =@(
 workstationSettingsStat
 }
 Function workstationSettingsStat(){
-    ##Uusi tapa tehd‰ taulukoita otetaan k‰yttˆˆn joka puolella!
+    ##Uusi tapa tehd√§ taulukoita otetaan k√§ytt√∂√∂n joka puolella!
     Clear-Host
-    Write-Host "T‰ss‰ ovat sinun asettamat asetukset"
+    Write-Host "T√§ss√§ ovat sinun asettamat asetukset"
     $workstationDATA | Format-Table -AutoSize | Out-String -Width ([int]::MaxValue)
-  $workstationSettingsAsk=Read-Host "Haluatko jatkaa? k/e "
-        ##Vastauksen k‰sittely tyˆasemissa
+    $workstationSettingsAsk=Read-Host "Haluatko jatkaa? k/e "
+        ##Vastauksen k√§sittely ty√∂asemissa
 }
 Clear-Host
 workstationInterfaceAsk
@@ -934,32 +931,32 @@ workstationInterfaceAsk
 Function workstationSetup(){
     Function workstationIPsetup(){
         if($workstationINT -match "^\d{1,2}$"){
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰mist‰!" -Status "Tehd‰‰n verkko asetuksia!" -Id 1 -PercentComplete 0
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§mist√§!" -Status "Tehd√§√§n verkko asetuksia!" -Id 1 -PercentComplete 0
             Remove-NetIPAddress -InterfaceIndex $workstationINT
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰minen!" -Status "Tehd‰‰n verkko asetuksia!" -Id 1 -PercentComplete 10
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§minen!" -Status "Tehd√§√§n verkko asetuksia!" -Id 1 -PercentComplete 10
             New-NetIPAddress -InterfaceIndex $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰minen!" -Status "tehd‰‰n verkko asetuksia!" -Id 1 -PercentComplete 20
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§minen!" -Status "tehd√§√§n verkko asetuksia!" -Id 1 -PercentComplete 20
             Set-DnsClientServerAddress -InterfaceIndex $workstationSubnetPrefix -ServerAddresses ("$workstationDNS,$workstationDNS2")
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰minen!" -Status "tehd‰‰n verkko asetuksia!" -Id 1 -Completed
-            sleep -Seconds 2
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§minen!" -Status "tehd√§√§n verkko asetuksia!" -Id 1 -Completed
+            Start-sleep -Seconds 1.5
             workstationADjoin
         }else{
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰mist‰!" -Status "Tehd‰‰n verkko asetuksia!" -Id 1 -PercentComplete 0
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§mist√§!" -Status "Tehd√§√§n verkko asetuksia!" -Id 1 -PercentComplete 0
             Remove-NetIPAddress -InterfaceAlias $workstationINT
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰minen!" -Status "Tehd‰‰n verkko asetuksia!" -Id 1 -PercentComplete 10
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§minen!" -Status "Tehd√§√§n verkko asetuksia!" -Id 1 -PercentComplete 10
             New-NetIPAddress -InterfaceAlias $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰minen!" -Status "tehd‰‰n verkko asetuksia!" -Id 1 -PercentComplete 20
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§minen!" -Status "tehd√§√§n verkko asetuksia!" -Id 1 -PercentComplete 20
             Set-DnsClientServerAddress -InterfaceAlias $workstationSubnetPrefix -ServerAddresses ("$workstationDNS,$workstationDNS2")
-            Write-Progress -Activity "Aloitetaan asetuksien m‰‰ritt‰minen!" -Status "tehd‰‰n verkko asetuksia!" -Id 1 -Completed
-            sleep -Seconds 2
+            Write-Progress -Activity "Aloitetaan asetuksien m√§√§ritt√§minen!" -Status "tehd√§√§n verkko asetuksia!" -Id 1 -Completed
+            Start-sleep -Seconds 1.5
             workstationADjoin
         }
     }
     Function workstationADjoin(){
         Clear-Host
         Add-Computer -DomainName $workstationADname
-        Write-Host "Kone k‰ynnistyy uudelleen 10 sekunnin p‰‰st‰! :)" -ForegroundColor Red
-        sleep -Seconds 10
+        Write-Host "Kone k√§ynnistyy uudelleen 10 sekunnin p√§√§st√§! :)" -ForegroundColor Red
+        Start-sleep -Seconds 10
         Restart-Computer -Force
     }
 }
