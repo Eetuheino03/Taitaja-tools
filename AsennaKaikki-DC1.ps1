@@ -1,9 +1,11 @@
-﻿
+﻿# Määritellään globaali debug-tilan muuttuja skriptin alkuun
+$Global:DebugMode = $false
+
 Function Main() {
     $ComputerName = $env:COMPUTERNAME
     $ComputerIP = (Test-Connection -ComputerName $ComputerName -Count 1).Ipv4Address.IPAddressToString
 
-    # Määritä kiinteä leveys valikon riveille
+    # Määritetään kiinteä leveys valikon riveille
     $lineWidth = 41
     $nameDisplay = " Name:$ComputerName".PadRight($lineWidth)
     $ipDisplay = " IP:$ComputerIP".PadRight($lineWidth)
@@ -20,15 +22,45 @@ Function Main() {
     Write-Host " | 3. Lisäominaisuudet                     | "
     Write-Host " | 4. Poistu                               | "
     Write-Host " | 5. Versio                               | "
+    # Käytetään if-lausetta debug-tilan näyttämiseen
+    $debugStatus = if ($Global:DebugMode) {'PÄÄLLÄ     '} else {'POIS PÄÄLTÄ'}
+    Write-Host " | 6. Debug-tila: $debugStatus              | "
     Write-Host " |-----------------------------------------| "
     $valintaS = Read-Host " |"
 
     Switch ($valintaS) {
-        1 { Clear-Host; Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green; Start-Sleep -Seconds 1.5; hostAsk }
-        2 { Clear-Host; Write-Host "Aloitetaan Active-Directory pystytystä!" -ForegroundColor Green; Start-Sleep -Seconds 1.5; adASK }
-        3 { Lisävalikko }
-        4 { Clear-Host; Write-Host "Poistutaan!" -ForegroundColor Red; Start-Sleep -Seconds 1.5; Exit; Clear-Host }
-        5 { versioControl }
+        1 {
+            Clear-Host
+            Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green
+            Start-Sleep -Seconds 1.5
+            if (-not $Global:DebugMode) { hostAsk }
+        }
+        2 {
+            Clear-Host
+            Write-Host "Aloitetaan Active-Directory pystytystä!" -ForegroundColor Green
+            Start-Sleep -Seconds 1.5
+            if (-not $Global:DebugMode) { adASK }
+        }
+        3 {
+            if (-not $Global:DebugMode) { Lisävalikko }
+        }
+        4 {
+            Clear-Host
+            Write-Host "Poistutaan!" -ForegroundColor Red
+            Start-Sleep -Seconds 1.5
+            Exit
+            Clear-Host
+        }
+        5 {
+            if (-not $Global:DebugMode) { versioControl }
+        }
+        6 {
+            $Global:DebugMode = -not $Global:DebugMode
+            $debugStatus = if ($Global:DebugMode) {'PÄÄLLÄ'} else {'POIS PÄÄLTÄ'}
+            Write-Host "Debug-tila vaihdettu: $debugStatus" -ForegroundColor Cyan
+            Start-Sleep -Seconds 1.5
+            Main
+        }
         default { Main }
     }
 }
@@ -259,12 +291,18 @@ Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -Perc
 
 
 Write-Progress -Activity "tehdään asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-    Install-WindowsFeature –ConfigurationFilePath DeploymentConfigTemplate.xml
+    Install-WindowsFeature -ConfigurationFilePath DeploymentConfigTemplate.xml
 Write-Progress -Activity "tehdään asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
 Start-sleep -Seconds $timeto
 Write-Progress -Activity "Tehdään asetuksia" -Status "Asetukset tehty! Käynnistetään uudelleen!" -Id 1 -Completed
-Write-Output "Kone käynnistyy uudelleen 10 sekunnin päästä!"
-Start-sleep -Seconds 10
+for ($i = 10; $i -ge 0; $i--) {
+    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -NoNewline
+    Start-Sleep -Seconds 1
+    # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
+    if ($i -gt 0) {
+        Write-Host "`r" -NoNewline
+    }
+}
 Restart-Computer -Force
 }
 Function adsetup(){
@@ -278,9 +316,15 @@ Catch{
     Break;
     }
 
-# Käynnistä uudelleen ja aseta asetukset!
-Write-Host "Kone käynnistyy uudelleen 30 sekunnin päästä!"
-Start-sleep 30
+# Silmukka, joka laskee 30:stä 0:aan
+for ($i = 30; $i -ge 0; $i--) {
+    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -NoNewline
+    Start-Sleep -Seconds 1
+    # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
+    if ($i -gt 0) {
+        Write-Host "`r" -NoNewline
+    }
+}
 
 Try{
     Restart-Computer -ComputerName $env:computername -ErrorAction Stop
