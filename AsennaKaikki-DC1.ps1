@@ -1,28 +1,38 @@
 ﻿
 Function Main() {
-$ComputerIP = (Test-Connection -ComputerName $env:computername -count 1).ipv4address.IPAddressToString
-Clear-Host
-Write-Host " ___________________________________________ "
-Write-host " |Valitse asetukset mitkä haluat määrittää!| "
-Write-Host " |_________________________________________| "
-Write-Host " | Name:$env:COMPUTERNAME | IP:$ComputerIP  | "
-Write-Host "<------------------------------------------->"
-Write-Host " | 1. Palvelimen valmistelu                | "
-Write-Host " | 2. Active-Driectory pystytys            | "
-Write-Host " | 3. Lisäominaisuudet                     | "
-Write-Host " | 4. Poistu                               | "
-Write-Host " | 5. Versio                               | "
-Write-Host " |-----------------------------------------| "
-$valintaS = Read-Host " |"
-Switch ($valintaS){
-    1 {Clear-Host;Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green; Start-sleep -Seconds 1.5; hostAsk }
-    2 {Clear-Host;Write-Host "Aloitetaan Active-Directory pystytystä!" -ForegroundColor Green; Start-sleep -Seconds 1.5; adASK}
-    3 {Lisävalikko}
-    4 {Clear-Host;Write-Host "Poistutaan!" -ForegroundColor Red; Start-sleep -Seconds 1.5;Exit;Clear-Host}
-    5 {versioControl}
-    default {Main}
+    $ComputerName = $env:COMPUTERNAME
+    $ComputerIP = (Test-Connection -ComputerName $ComputerName -Count 1).Ipv4Address.IPAddressToString
+
+    # Määritä kiinteä leveys valikon riveille
+    $lineWidth = 41
+    $nameDisplay = " Name:$ComputerName".PadRight($lineWidth)
+    $ipDisplay = " IP:$ComputerIP".PadRight($lineWidth)
+
+    Clear-Host
+    Write-Host " ___________________________________________ "
+    Write-host " |Valitse asetukset mitkä haluat määrittää!| "
+    Write-Host " |_________________________________________| "
+    Write-Host " |$nameDisplay|"
+    Write-Host " |$ipDisplay|"
+    Write-Host "<------------------------------------------->"
+    Write-Host " | 1. Palvelimen valmistelu                | "
+    Write-Host " | 2. Active-Driectory pystytys            | "
+    Write-Host " | 3. Lisäominaisuudet                     | "
+    Write-Host " | 4. Poistu                               | "
+    Write-Host " | 5. Versio                               | "
+    Write-Host " |-----------------------------------------| "
+    $valintaS = Read-Host " |"
+
+    Switch ($valintaS) {
+        1 { Clear-Host; Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green; Start-Sleep -Seconds 1.5; hostAsk }
+        2 { Clear-Host; Write-Host "Aloitetaan Active-Directory pystytystä!" -ForegroundColor Green; Start-Sleep -Seconds 1.5; adASK }
+        3 { Lisävalikko }
+        4 { Clear-Host; Write-Host "Poistutaan!" -ForegroundColor Red; Start-Sleep -Seconds 1.5; Exit; Clear-Host }
+        5 { versioControl }
+        default { Main }
+    }
 }
-}
+
 
 Function hostAsk(){
 Clear-Host
@@ -296,37 +306,48 @@ adsetup
 Clear-Host
 adask1
 }
-Function versioControl(){
-Clear-Host
-Write-host "           Asetus valikko! "
-write-host "       Versio: x.xx(v0.82)Beta "
-write-host "           By: Eetu Heino "
-write-host " Active-Directory automointi työkalu "
-$valintaVersio = Read-Host "Haluatko Takaisin päävalikkoon? k/e |"
-#Palautus Functio!
-if($valintaVersio -eq "k"){
-Write-Host "Palataan!"
-Start-sleep -Seconds 1
-Clear-Host
-Main
-}elseif($valintaVersio = "e"){
-Write-Host "Haluatko poistua skriptistä kokonaan?" -ForegroundColor Red
-$valintaVersio = Read-Host "k/e|"
-if($valintaVersio -eq "k"){
-Clear-Host
-Write-Host "Poistutaan!"
-Start-sleep -Seconds 1.5
-Clear-Host
-exit
-}else {
-Clear-Host
-versioControl
+Function versioControl() {
+    Clear-Host
+    Write-Host " ____________________________________________"
+    Write-Host " |               Asetus valikko!            | "
+    Write-Host " |            Versio: x.xx(v0.82)Beta       | "
+    Write-Host " |                By: Eetu Heino            | "
+    Write-Host " |    Active-Directory automointi työkalu   | "
+    Write-Host " |------------------------------------------| "
+    $valintaVersio = Read-Host " |Haluatko Takaisin päävalikkoon? k/e       |"
+
+    switch ($valintaVersio) {
+        "k" {
+            Write-Host "Palataan!"
+            Start-Sleep -Seconds 1
+            Clear-Host
+            Main
+        }
+        "e" {
+            Write-Host "Haluatko poistua skriptistä kokonaan?" -ForegroundColor Red
+            $valintaVersio = Read-Host "k/e|"
+            switch ($valintaVersio) {
+                "k" {
+                    Clear-Host
+                    Write-Host "Poistutaan!"
+                    Start-Sleep -Seconds 1.5
+                    Clear-Host
+                    exit
+                }
+                default {
+                    Clear-Host
+                    versioControl
+                }
+            }
+        }
+        default {
+            Clear-Host
+            versioControl
+        }
+    }
 }
 
-}
 
-
-}
 Function Lisävalikko(){
 Function MainMenu(){
 Clear-Host
