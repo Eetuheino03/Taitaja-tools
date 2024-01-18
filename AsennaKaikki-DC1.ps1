@@ -306,7 +306,7 @@ $valintaVersio = Read-Host "Haluatko Takaisin päävalikkoon? k/e |"
 #Palautus Functio!
 if($valintaVersio -eq "k"){
 Write-Host "Palataan!"
-Start-sleep -Seconds 1.5
+Start-sleep -Seconds 1
 Clear-Host
 Main
 }elseif($valintaVersio = "e"){
@@ -763,7 +763,10 @@ Function workstationSetup(){
         Clear-Host
         Add-Computer -DomainName $workstationADname
         Write-Host "Kone käynnistyy uudelleen 10 sekunnin päästä! :)" -ForegroundColor Red
-        Start-sleep -Seconds 10
+        Start-sleep -Seconds 2
+            for ($i = 9; $i -ge 0; $i--) {
+                Clear-Host;Write-Host $i -ForegroundColor Red;Start-Sleep -Seconds 1
+            }
         Restart-Computer -Force
     }
 }
