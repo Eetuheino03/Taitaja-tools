@@ -39,16 +39,16 @@ Write-Host "              | "
             Clear-Host
             Write-Host "Aloitetaan palvelimen valmistelu!" -ForegroundColor Green
             Start-Sleep -Seconds 1.5
-            if (-not $Global:DebugMode) { hostAsk }
+            hostAsk 
         }
         2 {
             Clear-Host
             Write-Host "Aloitetaan Active-Directory pystytystä!" -ForegroundColor Green
             Start-Sleep -Seconds 1.5
-            if (-not $Global:DebugMode) { adASK }
+            adASK
         }
         3 {
-            if (-not $Global:DebugMode) { Lisävalikko }
+            Lisävalikko 
         }
         4 {
             Clear-Host
@@ -58,7 +58,7 @@ Write-Host "              | "
             Clear-Host
         }
         5 {
-            if (-not $Global:DebugMode) { versioControl }
+            versioControl
         }
         6 {
             $Global:DebugMode = -not $Global:DebugMode
@@ -510,24 +510,30 @@ Function OUbuilder(){
                 ouRepetask2
             }
         }
-        Function ouRepetask2($nimetDATA, $OUnim){
-        Clear-History
-        $repet = Read-Host "Kuinka monta ala ou haluat?"
-            if($repet -eq ""){
+        Function ouRepetask2($nimetDATA, $OUnim) {
+            if ($Global:DebugMode -eq $true) {
+                Write-Host "Debug mode is on. No sub-OUs will be created."
+                return
+            }
+        
+            Clear-History
+            $repet = Read-Host "Kuinka monta ala ou haluat?"
+            if ($repet -eq "") {
                 Clear-Host
                 Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
                 Start-sleep -Seconds 1.5
-                ouRepetask2
-            } elseif($repet -match '^\d{1,2}$'){
-                for ($i=1; $i -le $repet;$i++) {
+                ouRepetask2 $nimetDATA $OUnim
+            } elseif ($repet -match '^\d{1,2}$') {
+                for ($i=1; $i -le $repet; $i++) {
                     $OUnim = Read-Host "Syötä ala ou:n nimi"
                     New-ADOrganizationalUnit -Name $OUnim -Path "OU=$OUmainS2,OU=$OUmainS,DC=$OUdomain0,DC=$OUdomain1"
                 }
                 OUbuilderMain
-            }else {
-            ouRepetask2
+            } else {
+                ouRepetask2 $nimetDATA $OUnim
             }
         }
+        
         Function ouRepetask($nimetDATA, $OUnim){
         Clear-History
         $repet = Read-Host "Kuinka monta ala ou haluat?"
@@ -549,19 +555,24 @@ Function OUbuilder(){
         }
     OUdomainAsk
     }
-    Function OUsetup(){
+    Function OUsetup() {
+        if ($Global:DebugMode -eq $true) {
+            Write-Host "Debug mode is on. OU setup will not be executed."
+            return
+        }
+    
         $OUExists = Get-ADOrganizationalUnit -Filter {Name -eq $OUmainS}
         Clear-Host
         Write-Progress -Activity "OU rakennus" -Status "Tehdään OU rakennusta!" -Id 1 -PercentComplete 0
         Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -PercentComplete 50
         Start-sleep -Seconds 1
-            if ($OUExists){
+        if ($OUExists) {
             Clear-Host
             Start-sleep -Seconds 1
             Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -Completed
             Write-Progress -Activity "OU rakennus" -Status "Tehdään OU rakennusta!" -Id 1 -Completed
             OUmainAsk2
-            }else{
+        } else {
             Write-Progress -Activity "OU rakennus" -Status "Tarkistetaan onko ou olemassa!" -Id 2 -ParentId 1 -Completed
             Write-Progress -Activity "OU rakennus" -Status "Tehdään pää OU!" -Id 2 -ParentId 1 -PercentComplete 0
             New-ADOrganizationalUnit -Name "$OUmainS" -Path "DC=$OUdomain0,DC=$OUdomain1"
@@ -569,8 +580,9 @@ Function OUbuilder(){
             Write-Progress -Activity "OU rakennus" -Status "Tehdään OU rakennusta!" -Id 1 -PercentComplete 10
             Write-Progress -Activity "OU rakennus" -Status "Tehdään OU rakennusta!" -Id 1 -Completed
             ouRepetask
-                    }
+        }
     }
+    
     Function UserAsk(){
     Clear-Host
         Function DomainAsk (){
@@ -851,44 +863,105 @@ Function workstationSettingsStat(){
     $workstationDATA | Format-Table -AutoSize | Out-String -Width ([int]::MaxValue)
     $workstationSettingsAsk=Read-Host "Haluatko jatkaa? k/e "
         ##Vastauksen käsittely työasemissa
+        switch ($workstationSettingsAsk) {
+            "k" {
+                # Jos vastaus on 'k', jatka seuraavaan toimintoon
+                # Esimerkiksi: workstationADjoin()
+                workstationSetup
+            }
+            "e" {
+                # Jos vastaus on 'e', palaa päävalikkoon tai tee jotain muuta
+                Main
+            }
+            default {
+                # Jos vastaus on jotain muuta, pyydä uudelleen tai tee jotain muuta
+                Write-Host "Virheellinen vastaus. Yritä uudelleen."
+                workstationSettingsStat
+            }
+        }
 }
 Clear-Host
 workstationInterfaceAsk
 }
 Function workstationSetup(){
-    Function workstationIPsetup(){
-        if($workstationINT -match "^\d{1,2}$"){
+    Function workstationIPsetup() {
+        # Ei keskeytetä koko funktion suoritusta, vaan vain järjestelmää muuttavat komennot
+        if ($workstationINT -match "^\d{1,2}$") {
             Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 0
-            Remove-NetIPAddress -InterfaceIndex $workstationINT
-            Write-Progress -Activity "Aloitetaan asetuksien määrittäminen!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
-            New-NetIPAddress -InterfaceIndex $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
-            Write-Progress -Activity "Aloitetaan asetuksien määrittäminen!" -Status "tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
-            Set-DnsClientServerAddress -InterfaceIndex $workstationSubnetPrefix -ServerAddresses ("$workstationDNS,$workstationDNS2")
-            Write-Progress -Activity "Aloitetaan asetuksien määrittäminen!" -Status "tehdään verkko asetuksia!" -Id 1 -Completed
+    
+            if ($Global:DebugMode -eq $false) {
+                Remove-NetIPAddress -InterfaceIndex $workstationINT
+            }
+    
+            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
+    
+            if ($Global:DebugMode -eq $false) {
+                New-NetIPAddress -InterfaceIndex $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
+            }
+    
+            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
+    
+            if ($Global:DebugMode -eq $false) {
+                Set-DnsClientServerAddress -InterfaceIndex $workstationINT -ServerAddresses ("$workstationDNS,$workstationDNS2")
+            }
+    
+            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -Completed
             Start-sleep -Seconds 1.5
             workstationADjoin
-        }else{
+        } else {
             Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 0
-            Remove-NetIPAddress -InterfaceAlias $workstationINT
-            Write-Progress -Activity "Aloitetaan asetuksien määrittäminen!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
-            New-NetIPAddress -InterfaceAlias $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
-            Write-Progress -Activity "Aloitetaan asetuksien määrittäminen!" -Status "tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
-            Set-DnsClientServerAddress -InterfaceAlias $workstationSubnetPrefix -ServerAddresses ("$workstationDNS,$workstationDNS2")
-            Write-Progress -Activity "Aloitetaan asetuksien määrittäminen!" -Status "tehdään verkko asetuksia!" -Id 1 -Completed
+    
+            if ($Global:DebugMode -eq $false) {
+                Remove-NetIPAddress -InterfaceAlias $workstationINT
+            }
+    
+            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
+    
+            if ($Global:DebugMode -eq $false) {
+                New-NetIPAddress -InterfaceAlias $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
+            }
+    
+            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
+    
+            if ($Global:DebugMode -eq $false) {
+                Set-DnsClientServerAddress -InterfaceAlias $workstationINT -ServerAddresses ("$workstationDNS,$workstationDNS2")
+            }
+    
+            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -Completed
             Start-sleep -Seconds 1.5
             workstationADjoin
         }
     }
-    Function workstationADjoin(){
+    
+    
+    Function workstationADjoin() {
         Clear-Host
-        Add-Computer -DomainName $workstationADname
-        Write-Host "Kone käynnistyy uudelleen 10 sekunnin päästä! :)" -ForegroundColor Red
-        Start-sleep -Seconds 2
+    
+        if ($Global:DebugMode -eq $false) {
+            Add-Computer -DomainName $workstationADname
+        } else {
+            Write-Host "Debug mode on päällä! Konetta ei liitetä domainiin." 
+            Start-Sleep -Seconds 1
+        }
+    
+        if ($Global:DebugMode -eq $false) {
+            Write-Host "Kone käynnistyy uudelleen 10 sekunnin päästä! :)" -ForegroundColor Red
+            Start-sleep -Seconds 2
             for ($i = 9; $i -ge 0; $i--) {
-                Clear-Host;Write-Host $i -ForegroundColor Red;Start-Sleep -Seconds 1
+                Clear-Host
+                Write-Host $i -ForegroundColor Red
+                Start-Sleep -Seconds 1
             }
-        Restart-Computer -Force
+            Restart-Computer -Force
+        } else {
+            Write-Host "Debug mode on päällä! Koneen uudelleenkäynnistys ohitetaan."
+            Start-Sleep -Seconds 1
+            Main
+        }
     }
+    
+    
+    workstationIPsetup
 }
 Clear-Host
 MainMenu
