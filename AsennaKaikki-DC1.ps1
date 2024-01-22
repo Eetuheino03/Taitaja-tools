@@ -4,7 +4,7 @@ $Global:DebugMode = $false
 Function Main() {
     $ComputerName = $env:COMPUTERNAME
     $ComputerIP = (Test-Connection -ComputerName $ComputerName -Count 1).Ipv4Address.IPAddressToString
-
+    $debugStatus
     # Määritetään kiinteä leveys valikon riveille
     $lineWidth = 41
     $nameDisplay = " Name:$ComputerName".PadRight($lineWidth)
@@ -24,7 +24,13 @@ Function Main() {
     Write-Host " | 5. Versio                               | "
     # Käytetään if-lausetta debug-tilan näyttämiseen
     $debugStatus = if ($Global:DebugMode) {'PÄÄLLÄ     '} else {'POIS PÄÄLTÄ'}
-    Write-Host " | 6. Debug-tila: $debugStatus              | "
+    Write-Host " | 6. Debug-tila: " -NoNewline
+        if ($Global:DebugMode) {
+    Write-Host "PÄÄLLÄ     " -NoNewline -ForegroundColor Red
+        } else {
+    Write-Host "POIS PÄÄLTÄ" -NoNewline -ForegroundColor Green
+                }
+Write-Host "              | "
     Write-Host " |-----------------------------------------| "
     $valintaS = Read-Host " |"
 
@@ -57,8 +63,6 @@ Function Main() {
         6 {
             $Global:DebugMode = -not $Global:DebugMode
             $debugStatus = if ($Global:DebugMode) {'PÄÄLLÄ'} else {'POIS PÄÄLTÄ'}
-            Write-Host "Debug-tila vaihdettu: $debugStatus" -ForegroundColor Cyan
-            Start-Sleep -Seconds 1.5
             Main
         }
         default { Main }
@@ -79,24 +83,35 @@ $ComputerName = Read-host "Ennen asennusta aseta koneen nimi"
     }
 }
 Function UudelleenSuoritus(){
-If($reask -eq 'k'){
-Clear-Host
-hostAsk
-}else {
-Clear-Host
-$vastausUudelleenS= Read-Host "Haluatko palata päävalikkoon vai sulkea ohjelman? p/s"
-if($vastausUudelleenS -eq "p" ){
-Clear-Host
-Write-Host "Ohjataan päävalikkoon!" -ForegroundColor Green
-Main
-}
-if($vastausUudelleenS -eq "s"){
-Clear-Host
-Write-Host "Suljetaan ohjelma!" -ForegroundColor Red
-Start-sleep -Seconds 1.5
-Exit
-}
-}
+    switch ($reask) {
+        'k' {
+            Clear-Host
+            hostAsk
+        }
+        default {
+            Clear-Host
+            $vastausUudelleenS = Read-Host "Haluatko palata päävalikkoon vai sulkea ohjelman? p/s"
+            switch ($vastausUudelleenS) {
+                'p' {
+                    Clear-Host
+                    Write-Host "Ohjataan päävalikkoon!" -ForegroundColor Green
+                    Main
+                }
+                's' {
+                    Clear-Host
+                    Write-Host "Suljetaan ohjelma!" -ForegroundColor Red
+                    Start-Sleep -Seconds 1.5
+                    Exit
+                }
+                default {
+                    Clear-Host
+                    Write-Host "Ohjataan päävalikkoon!" -ForegroundColor Green
+                    Main
+                }
+            }
+        }
+    }
+    
 }
 Function Networkask() {
 Function adapterSelect(){
@@ -147,27 +162,34 @@ subnetS
 Function gateawayS(){
 $GatewayIP = Read-Host "Aseta Gateaway osoite "
 Clear-Host
-Function checkgatawayC(){
-$gateawayAnwser = Read-host "Haluatko muuttaa staattisen osoitteen vai gateaway osoitteen? s/g |"
-    if($gateawayAnwser -eq "s") {
-    Clear-Host
-    Write-Host "Sinut ohjataan staatisen osoitteen asettamiseen!" -ForegroundColor Green
-    Start-sleep -Seconds 1.5
-    Clear-Host
-    ComputeripS
-    }elseif($gateawayAnwser -eq "g"){
-    Clear-Host
-    Write-Host "Sinut ohjataan gateaway asettamiseen!" -ForegroundColor Green
-    Start-sleep -Seconds 1.5
-    Clear-Host
-    gateawayS
-    }elseif($gateawayAnwser -eq ""){
-    Clear-Host
-    Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
-    Start-sleep -Seconds 1.5
-    Clear-Host
-    checkgatawayC
-    }}
+Function checkgatawayC() {
+    $gateawayAnwser = Read-host "Haluatko muuttaa staattisen osoitteen vai gateaway osoitteen? s/g |"
+    
+    switch ($gateawayAnwser) {
+        "s" {
+            Clear-Host
+            Write-Host "Sinut ohjataan staatisen osoitteen asettamiseen!" -ForegroundColor Green
+            Start-sleep -Seconds 1.5
+            Clear-Host
+            ComputeripS
+        }
+        "g" {
+            Clear-Host
+            Write-Host "Sinut ohjataan gateaway asettamiseen!" -ForegroundColor Green
+            Start-sleep -Seconds 1.5
+            Clear-Host
+            gateawayS
+        }
+        default {
+            Clear-Host
+            Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
+            Start-sleep -Seconds 1.5
+            Clear-Host
+            checkgatawayC
+        }
+    }
+}
+
 If($ComputerIP -eq $GatewayIP){
 Write-Host "Virheellinen osoite! $ComputerIP ja $GatewayIP ovat samat!!" -ForegroundColor Red
 Write-Host "Aseta asetukset uudelleen!" -ForegroundColor Red
@@ -210,6 +232,7 @@ Clear-Host
 adapterSelect
 }
 Function asetuksetDATA(){
+$asetuksetDATA
 $asetuksetDATA=@([PSCustomObject]@{
     Koneen_Nimi = $ComputerName
     Verkkokortti = $InterFaceINDEX
@@ -222,22 +245,29 @@ $asetuksetDATA=@([PSCustomObject]@{
 asetuksetSTAT
 }
 Function asetuksetSTAT() {
+    $reask
 Clear-Host
 Write-Output "Yhteen veto Asetuksista: "
 $asetuksetDATA | Format-Table -AutoSize | Out-String -Width ([int]::MaxValue)
 $Startconf = Read-Host "Haluatko jatkaa k/e?"
-if($Startconf -eq 'k'){
-Clear-host
-Write-Host "Aloitetaan konfiguraatiota!" -ForegroundColor Green
-timeask
-}else {
-Clear-Host
-Write-Host "Et halunnut aloittaa konfiguraatio skriptiä!" -ForegroundColor Red
-$reask = Read-Host "Haluatko aloittaa sen uudelleen? k/e"
-UudelleenSuoritus
+
+switch ($Startconf) {
+    'k' {
+        Clear-Host
+        Write-Host "Aloitetaan konfiguraatiota!" -ForegroundColor Green
+        timeask
+    }
+    default {
+        Clear-Host
+        Write-Host "Et halunnut aloittaa konfiguraatio skriptiä!" -ForegroundColor Red
+        $reask = Read-Host "Haluatko aloittaa sen uudelleen? k/e"
+        UudelleenSuoritus
+    }
 }
+
 }
 Function timeask(){
+    $timeto
 param(
     $tim
 )
@@ -296,7 +326,7 @@ Write-Progress -Activity "tehdään asetuksia" -Status "Ominaisuudet asenettu" -
 Start-sleep -Seconds $timeto
 Write-Progress -Activity "Tehdään asetuksia" -Status "Asetukset tehty! Käynnistetään uudelleen!" -Id 1 -Completed
 for ($i = 10; $i -ge 0; $i--) {
-    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -NoNewline
+    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -ForegroundColor Red -NoNewline
     Start-Sleep -Seconds 1
     # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
     if ($i -gt 0) {
@@ -318,7 +348,7 @@ Catch{
 
 # Silmukka, joka laskee 30:stä 0:aan
 for ($i = 30; $i -ge 0; $i--) {
-    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -NoNewline
+    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -ForegroundColor Red -NoNewline
     Start-Sleep -Seconds 1
     # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
     if ($i -gt 0) {
@@ -440,6 +470,8 @@ Function OUbuilder(){
     }
     Function OUask(){
         Function OUdomainAsk(){
+            $OUdomain0
+            $OUdomain1
         Clear-Host
         $OUdomain = Read-Host "Aseta domain"
         $OUdomainParts = $OUdomain.Split(".")
@@ -542,6 +574,8 @@ Function OUbuilder(){
     Function UserAsk(){
     Clear-Host
         Function DomainAsk (){
+            $OUdomain0
+            $OUdomain1
         Clear-Host
         $OUdomain = Read-Host "Aseta domain"
         $OUdomainParts = $OUdomain.Split(".")
@@ -557,6 +591,7 @@ Function OUbuilder(){
             }
         }
         Function pathAsk() {
+            $pathAsk
             Clear-Host
             $pathAsk = Read-Host "Minkä ou:n alle haluat kyseiset käyttäjät "
             pathAsk2
@@ -580,6 +615,7 @@ Function OUbuilder(){
             }
         }
         Function pathAsk4() {
+            $pathAsk4
             Clear-Host
             $pathAsk4 = Read-Host "Valitse ala ou "
                 if ($pathAsk2 -eq "") {
@@ -686,6 +722,7 @@ $workstationIP = Read-Host "Laita työaseman staattinen osoite: "
     }
 }
 Function workstationSubnetAsk(){
+    $workstationSubnetPrefix
     Clear-Host
     $workstationSubnetPrefix = Read-Host "laita subnetin prefix"
         if($workstationSubnet -eq ""){
@@ -708,25 +745,41 @@ $workstationgateIP=Read-Host "Laita Gateaway osoite"
             workstationGateawayAsk
         }elseif($workstationgateIP -eq $workstationIP){
             Clear-Host
-            $workstationTGAsk=Read-Host "Sinun työaseman ja gateaway osoite on sama! kumman haluat vaihtaa? t/g|" -ForegroundColor Red
-                If($workstationTGAsk -eq "t"){
-                    Clear-Host
-                    workstationIPAsk
-                }elseif($workstationTGAsk -eq "g"){
-                    Clear-Host
-                    workstationGateawayAsk
-                }else {
+            $workstationTGAsk = Read-Host "Sinun työaseman ja gateaway osoite on sama! kumman haluat vaihtaa? t/g|" -ForegroundColor Red
+
+switch ($workstationTGAsk) {
+    "t" {
+        Clear-Host
+        workstationIPAsk
+    }
+    "g" {
+        Clear-Host
+        workstationGateawayAsk
+    }
+    default {
+        Clear-Host
+        $workstationAnwser = Read-Host "Haluatko poistua koko ohjelmasta? k/e "
+        switch ($workstationAnwser) {
+            "k" {
                 Clear-Host
-                $workstationAnwser=Read-Host "Haluatko poistua koko ohjelmasta? k/e "
-                    if($workstationAnwser -eq "k"){
-                        Clear-Host
-                        Write-Host "Poistutaan ohjelmasta!" -ForegroundColor Red
-                        Start-sleep -Seconds 1.5
-                    }elseif($workstationAnwser -eq "e"){
-                        Clear-Host
-                        MainMenu
-                    }
-                }
+                Write-Host "Poistutaan ohjelmasta!" -ForegroundColor Red
+                Start-sleep -Seconds 1.5
+                Exit
+            }
+            "e" {
+                Clear-Host
+                MainMenu
+            }
+            default {
+                Clear-Host
+                Write-Host "Epäkelpo valinta. Palataan päävalikkoon." -ForegroundColor Yellow
+                Start-Sleep -Seconds 1.5
+                MainMenu
+            }
+        }
+    }
+}
+
         }else {
         workstationDNSask
         }
@@ -772,6 +825,7 @@ Function workstationADask(){
         }
 }
 Function workstationDATA(){
+    $workstationDATA
 ##Tämä Functio muokkaa datan taulukoksi!
 ## Taulukko talletetaan DATA osioon!
 $workstationDATA =@(
@@ -790,6 +844,7 @@ $workstationDATA =@(
 workstationSettingsStat
 }
 Function workstationSettingsStat(){
+    $workstationSettingsAsk
     ##Uusi tapa tehdä taulukoita otetaan käyttöön joka puolella!
     Clear-Host
     Write-Host "Tässä ovat sinun asettamat asetukset"
