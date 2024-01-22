@@ -283,57 +283,103 @@ if ( $time -in 1..10)
 }
 }
 Function Start-script() {
-Clear-Host
-Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
+    Clear-Host
+    Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
 
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan nimeä: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
-    Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
-Write-Progress -Activity "tehdään asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
-Start-sleep -Seconds $timeto
-Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
-#Verkko kohta!
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-# Tarkistaa Interface syöttö muodon
-If($InterFaceINDEX -match "^\d{1,2}$"){
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
-    Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 60
-    Set-DnsClientServerAddress -InterfaceIndex $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 70
-    New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
-}else {
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
-    Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 60
+    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan nimeä: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
+    if ($Global:DebugMode -eq $false) {
+        Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
+    } else {
+        Write-Host "Debug mode on päällä! Koneen nimeä ei vaihdeta."
+        Start-Sleep -Seconds 1
+    }
+    Write-Progress -Activity "tehdään asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
+    Start-sleep -Seconds $timeto
+    Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
+    # Verkko kohta!
+    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+    # Tarkistaa Interface syöttö muodon
+    if ($InterFaceINDEX -match "^\d{1,2}$") {
+        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+        if ($Global:DebugMode -eq $false) {
+            Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
+        } else {
+            Write-Host "Debug mode on päällä! Verkko-osoitetta ei poisteta."
+            Start-Sleep -Seconds 1
+        }
+        
+        if ($Global:DebugMode -eq $false) {
+            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+            Set-DnsClientServerAddress -InterfaceIndex $InterFaceINDEX -ServerAddresses ("$dnsIP,$dnsIP2")
+        } else {
+            Write-Host "Debug mode on päällä! DNS-palvelinosoitteita ei aseteta."
+            Start-Sleep -Seconds 1
+        }
+        
+        if ($Global:DebugMode -eq $false) {
+            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 60
+            New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+        } else {
+            Write-Host "Debug mode on päällä! Uutta verkko-osoitetta ei aseteta."
+            Start-Sleep -Seconds 1
+        }
+        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
+    } else {
+    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+    if ($Global:DebugMode -eq $false) {
+        Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
+        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+    }else {
+        Write-Host "Debug mode on päällä! Verkko-osoitetta ei poisteta."
+        Start-Sleep -Seconds 1
+    }
+    if ($Global:DebugMode -eq $false) {
+    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 60
     Set-DnsClientServerAddress -InterfaceAlias $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 70
-    New-NetIPAddress -InterfaceAlias $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
-Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
+    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 70   
+    } else {
+        Write-Host "Debug mode on päällä! DNS-palvelinosoitteita ei aseteta."
+        Start-Sleep -Seconds 1
+    }
+    if ($Global:DebugMode -eq $false) {
+        New-NetIPAddress -InterfaceAlias $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90  
+    } else {
+        Write-Host "Debug mode on päällä! Uutta verkko-osoitetta ei aseteta."
+        Start-Sleep -Seconds 1
+    }
+    
 }
 Write-Progress -Activity "tehdään asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
 Start-sleep -Seconds $timeto
 Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
 #Verkko kohta loppuu!
-
-
-
 Write-Progress -Activity "tehdään asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+if ($Global:DebugMode -eq $false) {
     Install-WindowsFeature -ConfigurationFilePath DeploymentConfigTemplate.xml
-Write-Progress -Activity "tehdään asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
+    Write-Progress -Activity "tehdään asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
+} else {
+    Write-Host "Debug mode on päällä! Windows ominaisuutta ei asenettu!"
+    Start-Sleep -Seconds 1
+}
+
 Start-sleep -Seconds $timeto
 Write-Progress -Activity "Tehdään asetuksia" -Status "Asetukset tehty! Käynnistetään uudelleen!" -Id 1 -Completed
-for ($i = 10; $i -ge 0; $i--) {
+if ($Global:DebugMode -eq $false) {
+    for ($i = 10; $i -ge 0; $i--) {
     Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -ForegroundColor Red -NoNewline
     Start-Sleep -Seconds 1
     # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
     if ($i -gt 0) {
         Write-Host "`r" -NoNewline
+            }
+        }
+    Restart-Computer -Force
+    } else {
+        Write-Host "Debug mode on päällä! Uudelleen käynnistys ohitettu!"
+        Start-Sleep -Seconds 1
     }
-}
-Restart-Computer -Force
+
 }
 Function adsetup(){
 # AD Asetukset
