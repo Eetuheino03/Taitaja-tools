@@ -287,99 +287,102 @@ Function Start-script() {
     Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 0
 
     Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan nimeä: $ComputerName" -Id 2 -ParentId 1 -PercentComplete 0
-    if ($Global:DebugMode -eq $false) {
-        Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
-    } else {
-        Write-Host "Debug mode on päällä! Koneen nimeä ei vaihdeta."
-        Start-Sleep -Seconds 1
-    }
-    Write-Progress -Activity "tehdään asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
-    Start-sleep -Seconds $timeto
-    Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
-    # Verkko kohta!
-    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-    # Tarkistaa Interface syöttö muodon
-    if ($InterFaceINDEX -match "^\d{1,2}$") {
-        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+    try {
         if ($Global:DebugMode -eq $false) {
-            Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
+            Rename-computer -ComputerName $env:COMPUTERNAME -NewName $ComputerName
         } else {
-            Write-Host "Debug mode on päällä! Verkko-osoitetta ei poisteta."
+            Write-Host "Debug-tila on käytössä! Koneen nimeä ei vaihdeta."
             Start-Sleep -Seconds 1
         }
-        
-        if ($Global:DebugMode -eq $false) {
-            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
-            Set-DnsClientServerAddress -InterfaceIndex $InterFaceINDEX -ServerAddresses ("$dnsIP,$dnsIP2")
+        Write-Progress -Activity "tehdään asetuksia" -Status "Koneelle on asetettu nimi: $ComputerName" -Id 2 -ParentId 1 -Completed
+        Start-sleep -Seconds $timeto
+        Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 20
+        # Verkko kohta!
+        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+        # Tarkistaa Interface syöttö muodon
+        if ($InterFaceINDEX -match "^\d{1,2}$") {
+            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+            if ($Global:DebugMode -eq $false) {
+                Remove-NetIPAddress -InterfaceIndex $InterFaceINDEX
+            } else {
+                Write-Host "Debug-tila on käytössä! Verkko-osoitetta ei poisteta."
+                Start-Sleep -Seconds 1
+            }
+            
+            if ($Global:DebugMode -eq $false) {
+                Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+                Set-DnsClientServerAddress -InterfaceIndex $InterFaceINDEX -ServerAddresses ("$dnsIP,$dnsIP2")
+            } else {
+                Write-Host "Debug-tila on käytössä! DNS-palvelinosoitteita ei aseteta."
+                Start-Sleep -Seconds 1
+            }
+            
+            if ($Global:DebugMode -eq $false) {
+                Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 60
+                New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+            } else {
+                Write-Host "Debug-tila on käytössä! Uutta verkko-osoitetta ei aseteta."
+                Start-Sleep -Seconds 1
+            }
+            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
         } else {
-            Write-Host "Debug mode on päällä! DNS-palvelinosoitteita ei aseteta."
-            Start-Sleep -Seconds 1
-        }
-        
-        if ($Global:DebugMode -eq $false) {
-            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -id 2 -ParentId 1 -PercentComplete 60
-            New-NetIPAddress -InterfaceIndex $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
-        } else {
-            Write-Host "Debug mode on päällä! Uutta verkko-osoitetta ei aseteta."
-            Start-Sleep -Seconds 1
-        }
-        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90
-    } else {
-    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
-    if ($Global:DebugMode -eq $false) {
-        Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
-        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
-    }else {
-        Write-Host "Debug mode on päällä! Verkko-osoitetta ei poisteta."
-        Start-Sleep -Seconds 1
-    }
-    if ($Global:DebugMode -eq $false) {
-    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 60
-    Set-DnsClientServerAddress -InterfaceAlias $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
-    Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 70   
-    } else {
-        Write-Host "Debug mode on päällä! DNS-palvelinosoitteita ei aseteta."
-        Start-Sleep -Seconds 1
-    }
-    if ($Global:DebugMode -eq $false) {
-        New-NetIPAddress -InterfaceAlias $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
-        Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90  
-    } else {
-        Write-Host "Debug mode on päällä! Uutta verkko-osoitetta ei aseteta."
-        Start-Sleep -Seconds 1
-    }
-    
-}
-Write-Progress -Activity "tehdään asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
-Start-sleep -Seconds $timeto
-Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
-#Verkko kohta loppuu!
-Write-Progress -Activity "tehdään asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
-if ($Global:DebugMode -eq $false) {
-    Install-WindowsFeature -ConfigurationFilePath DeploymentConfigTemplate.xml
-    Write-Progress -Activity "tehdään asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
-} else {
-    Write-Host "Debug mode on päällä! Windows ominaisuutta ei asenettu!"
-    Start-Sleep -Seconds 1
-}
-
-Start-sleep -Seconds $timeto
-Write-Progress -Activity "Tehdään asetuksia" -Status "Asetukset tehty! Käynnistetään uudelleen!" -Id 1 -Completed
-if ($Global:DebugMode -eq $false) {
-    for ($i = 10; $i -ge 0; $i--) {
-    Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -ForegroundColor Red -NoNewline
-    Start-Sleep -Seconds 1
-    # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
-    if ($i -gt 0) {
-        Write-Host "`r" -NoNewline
+            Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 10
+            if ($Global:DebugMode -eq $false) {
+                Remove-NetIPAddress -InterfaceAlias $InterFaceINDEX
+                Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 50
+            } else {
+                Write-Host "Debug-tila on käytössä! Verkko-osoitetta ei poisteta."
+                Start-Sleep -Seconds 1
+            }
+            if ($Global:DebugMode -eq $false) {
+                Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 60
+                Set-DnsClientServerAddress -InterfaceAlias $InterFaceINDEX -ServerAddresses ("$dnsIP,dnsIP2")
+                Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 70   
+            } else {
+                Write-Host "Debug-tila on käytössä! DNS-palvelinosoitteita ei aseteta."
+                Start-Sleep -Seconds 1
+            }
+            if ($Global:DebugMode -eq $false) {
+                New-NetIPAddress -InterfaceAlias $InterFaceINDEX -IPAddress $ComputerIP -PrefixLength $Subnetprefix -DefaultGateway $GatewayIP
+                Write-Progress -Activity "tehdään asetuksia" -Status "Asetetaan Verkko asetuksia!" -Id 2 -ParentId 1 -PercentComplete 90  
+            } else {
+                Write-Host "Debug-tila on käytössä! Uutta verkko-osoitetta ei aseteta."
+                Start-Sleep -Seconds 1
             }
         }
-    Restart-Computer -Force
-    } else {
-        Write-Host "Debug mode on päällä! Uudelleen käynnistys ohitettu!"
-        Start-Sleep -Seconds 1
+        Write-Progress -Activity "tehdään asetuksia" -Status "Verkko asetukset asetettu: Interfaceindex $InterFaceINDEX, IP osoite: $ComputerIP Subnetinprefix: $Subnetprefix Gateaway: $GatewayIP" -Id 2 -ParentId 1 -Completed
+        Start-sleep -Seconds $timeto
+        Write-Progress -Activity "tehdään asetuksia" -Status "Aloitetaan!" -Id 1 -PercentComplete 60
+        #Verkko kohta loppuu!
+        Write-Progress -Activity "tehdään asetuksia" -Status "Asennetaan ominaisuuksia!" -Id 2 -ParentId 1 -PercentComplete 0
+        if ($Global:DebugMode -eq $false) {
+            Install-WindowsFeature -ConfigurationFilePath DeploymentConfigTemplate.xml
+            Write-Progress -Activity "tehdään asetuksia" -Status "Ominaisuudet asenettu" -Id 2 -ParentId 1 -Completed
+        } else {
+            Write-Host "Debug-tila on käytössä! Windows-ominaisuutta ei asennettu!"
+            Start-Sleep -Seconds 1
+        }
+        Start-sleep -Seconds $timeto
+        Write-Progress -Activity "Tehdään asetuksia" -Status "Asetukset tehty! Käynnistetään uudelleen!" -Id 1 -Completed
+        if ($Global:DebugMode -eq $false) {
+            for ($i = 10; $i -ge 0; $i--) {
+                Write-Host "Uudelleenkäynnistys tapahtuu $i sekunnin kuluttua..." -ForegroundColor Red -NoNewline
+                Start-Sleep -Seconds 1
+                # Poistetaan edellinen rivi, jotta konsoli pysyy siistinä.
+                if ($i -gt 0) {
+                    Write-Host "`r" -NoNewline
+                }
+            }
+            Restart-Computer -Force
+        } else {
+            Write-Host "Debug-tila on käytössä! Uudelleenkäynnistystä ei suoriteta!"
+            Start-Sleep -Seconds 1
+        }
     }
-
+    catch {
+        Write-Warning -Message "Virhe asetusten suorittamisessa: $($_.Exception.Message)"
+        Break
+    }
 }
 Function adsetup(){
 # AD Asetukset
@@ -630,15 +633,15 @@ Function OUbuilder(){
     }
     
     Function UserAsk(){
-    Clear-Host
+        Clear-Host
         Function DomainAsk (){
             $OUdomain0
             $OUdomain1
-        Clear-Host
-        $OUdomain = Read-Host "Aseta domain"
-        $OUdomainParts = $OUdomain.Split(".")
-        $OUdomain0 = $OUdomainParts[0]
-        $OUdomain1 = $OUdomainParts[1]
+            Clear-Host
+            $OUdomain = Read-Host "Aseta domain"
+            $OUdomainParts = $OUdomain.Split(".")
+            $OUdomain0 = $OUdomainParts[0]
+            $OUdomain1 = $OUdomainParts[1]
             if($OUdomain -eq ""){
                 Clear-Host
                 Write-Host "Et voi jättää tätä tyhjäksi!" -ForegroundColor Red
@@ -657,11 +660,11 @@ Function OUbuilder(){
         Function pathAsk2() {
             Clear-Host
             $pathAsk2 = Read-Host "Valitse ala ou tai paina enter jatkaaksesi "
-                if ($pathAsk2 -eq "") {
+            if ($pathAsk2 -eq "") {
                 repetAsk
-                }else {
-                    pathAsk3
-                }
+            }else {
+                pathAsk3
+            }
         }
         Function pathAsk3() {
             Clear-Host
@@ -676,11 +679,11 @@ Function OUbuilder(){
             $pathAsk4
             Clear-Host
             $pathAsk4 = Read-Host "Valitse ala ou "
-                if ($pathAsk2 -eq "") {
+            if ($pathAsk2 -eq "") {
                 pathAsk4
-                }else {
-                    repetAsk3
-                }
+            }else {
+                repetAsk3
+            }
         }
         Function repetAsk (){
             Clear-Host
@@ -694,13 +697,19 @@ Function OUbuilder(){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
                     $UserName = Read-Host "Syötä käytäjän nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
+                    $OUPath = "OU=$pathAsk"
+                    if ($pathAsk2) {
+                        $OUPath = "OU=$pathAsk2,$OUPath"
+                    }
+                    if ($pathAsk4) {
+                        $OUPath = "OU=$pathAsk4,$OUPath"
+                    }
+                    New-ADUser -Name "$UserName" -Path "OU=$OUPath,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
                 }
                 OUbuilderMain
             }else {
-            repetAsk
+                repetAsk
             }
-
         }
         Function repetAsk2 (){
             Clear-Host
@@ -714,13 +723,16 @@ Function OUbuilder(){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
                     $UserName = Read-Host "Syötä käytäjän nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=$pathAsk2,OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
+                    $OUPath = "OU=$pathAsk2,OU=$pathAsk"
+                    if ($pathAsk4) {
+                        $OUPath = "OU=$pathAsk4,$OUPath"
+                    }
+                    New-ADUser -Name "$UserName" -Path "OU=$OUPath,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
                 }
                 OUbuilderMain
             }else {
-            repetAsk
+                repetAsk
             }
-
         }
         Function repetAsk3 (){
             Clear-Host
@@ -734,20 +746,45 @@ Function OUbuilder(){
                 for ($i=1; $i -le $repet;$i++) {
                     Clear-Host
                     $UserName = Read-Host "Syötä käytäjän nimi "
-                    New-ADUser -Name "$UserName" -Path "OU=pathAsk4,OU=$pathAsk2, OU=$pathAsk,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
+                    $OUPath = "OU=$pathAsk4,OU=$pathAsk2,OU=$pathAsk"
+                    New-ADUser -Name "$UserName" -Path "OU=$OUPath,DC=$OUdomain0,DC=$OUdomain1" -Accountpassword (Read-Host -AsSecureString "Käyttäjän salasana ") -Enable $true
                 }
                 OUbuilderMain
             }else {
-            repetAsk
+                repetAsk
             }
-
         }
         DomainAsk
     }
-    function GroupMain {
-       ##Täytyy toteuttaa uudelleen!!!!
-        
-    }
+        function GroupMain {
+            function CreateADGroups {
+                $groupCount = Read-Host "Kuinka monta ryhmää haluat luoda?"
+
+                for ($i=0; $i -lt $groupCount; $i++) {
+                    $groupName = Read-Host "Anna ryhmän nimi:"
+                    $groupPath = Read-Host "Anna ryhmän polku:"
+                    $groupType = Read-Host "Anna ryhmän tyyppi (jätä tyhjäksi oletusarvoa 'Security' varten):"
+
+                    if ($groupType -eq "") {
+                        $groupType = "Security"
+                    }
+
+                    if ($global:debug -eq $true) {
+                        Write-Host "Skipping system-modifying command: New-ADGroup -Name $groupName -Path $groupPath -GroupScope $groupType -PassThru" -ForegroundColor Yellow
+                    } else {
+                        try {
+                            New-ADGroup -Name $groupName -Path $groupPath -GroupScope $groupType -PassThru
+                            Write-Host "Ryhmä '$groupName' luotu onnistuneesti." -ForegroundColor Green
+                        } catch {
+                            Write-Host "Ryhmän '$groupName' luonti epäonnistui. Virhe: $_" -ForegroundColor Red
+                        }
+                    }
+                }
+            }
+
+            CreateADGroups
+        }
+    
 OUbuilderMain
 }
 Function workstationAsk(){
@@ -931,78 +968,92 @@ workstationInterfaceAsk
 }
 Function workstationSetup(){
     Function workstationIPsetup() {
-        # Ei keskeytetä koko funktion suoritusta, vaan vain järjestelmää muuttavat komennot
-        if ($workstationINT -match "^\d{1,2}$") {
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 0
-    
-            if ($Global:DebugMode -eq $false) {
-                Remove-NetIPAddress -InterfaceIndex $workstationINT
+        try {
+            # Ei keskeytetä koko funktion suoritusta, vaan vain järjestelmää muuttavat komennot
+            if ($workstationINT -match "^\d{1,2}$") {
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 0
+        
+                if ($Global:DebugMode -eq $false) {
+                    Remove-NetIPAddress -InterfaceIndex $workstationINT
+                }
+        
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
+        
+                if ($Global:DebugMode -eq $false) {
+                    New-NetIPAddress -InterfaceIndex $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
+                }
+        
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
+        
+                if ($Global:DebugMode -eq $false) {
+                    Set-DnsClientServerAddress -InterfaceIndex $workstationINT -ServerAddresses ("$workstationDNS,$workstationDNS2")
+                }
+        
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -Completed
+                Start-sleep -Seconds 1.5
+                workstationADjoin
+            } else {
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 0
+        
+                if ($Global:DebugMode -eq $false) {
+                    Remove-NetIPAddress -InterfaceAlias $workstationINT
+                }
+        
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
+        
+                if ($Global:DebugMode -eq $false) {
+                    New-NetIPAddress -InterfaceAlias $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
+                }
+        
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
+        
+                if ($Global:DebugMode -eq $false) {
+                    Set-DnsClientServerAddress -InterfaceAlias $workstationINT -ServerAddresses ("$workstationDNS,$workstationDNS2")
+                }
+        
+                Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -Completed
+                Start-sleep -Seconds 1.5
+                workstationADjoin
             }
-    
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
-    
-            if ($Global:DebugMode -eq $false) {
-                New-NetIPAddress -InterfaceIndex $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
-            }
-    
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
-    
-            if ($Global:DebugMode -eq $false) {
-                Set-DnsClientServerAddress -InterfaceIndex $workstationINT -ServerAddresses ("$workstationDNS,$workstationDNS2")
-            }
-    
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -Completed
-            Start-sleep -Seconds 1.5
-            workstationADjoin
-        } else {
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 0
-    
-            if ($Global:DebugMode -eq $false) {
-                Remove-NetIPAddress -InterfaceAlias $workstationINT
-            }
-    
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 10
-    
-            if ($Global:DebugMode -eq $false) {
-                New-NetIPAddress -InterfaceAlias $workstationINT -IPAddress $workstationIP -PrefixLength $workstationSubnetPrefix -DefaultGateway $workstationgateIP
-            }
-    
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -PercentComplete 20
-    
-            if ($Global:DebugMode -eq $false) {
-                Set-DnsClientServerAddress -InterfaceAlias $workstationINT -ServerAddresses ("$workstationDNS,$workstationDNS2")
-            }
-    
-            Write-Progress -Activity "Aloitetaan asetuksien määrittämistä!" -Status "Tehdään verkko asetuksia!" -Id 1 -Completed
-            Start-sleep -Seconds 1.5
-            workstationADjoin
+        } catch {
+            $errorMessage = $_.Exception.Message
+            Write-Host "Virhe verkkoasetusten määrittämisessä: $errorMessage" -ForegroundColor Red
+            Start-Sleep -Seconds 1
+            workstationSetup
         }
     }
     
     
     Function workstationADjoin() {
-        Clear-Host
-    
-        if ($Global:DebugMode -eq $false) {
-            Add-Computer -DomainName $workstationADname
-        } else {
-            Write-Host "Debug mode on päällä! Konetta ei liitetä domainiin." 
-            Start-Sleep -Seconds 1
-        }
-    
-        if ($Global:DebugMode -eq $false) {
-            Write-Host "Kone käynnistyy uudelleen 10 sekunnin päästä! :)" -ForegroundColor Red
-            Start-sleep -Seconds 2
-            for ($i = 9; $i -ge 0; $i--) {
-                Clear-Host
-                Write-Host $i -ForegroundColor Red
+        try {
+            Clear-Host
+        
+            if ($Global:DebugMode -eq $false) {
+                Add-Computer -DomainName $workstationADname
+            } else {
+                Write-Host "Debug-tila on käytössä! Konetta ei liitetä domainiin." 
                 Start-Sleep -Seconds 1
             }
-            Restart-Computer -Force
-        } else {
-            Write-Host "Debug mode on päällä! Koneen uudelleenkäynnistys ohitetaan."
+        
+            if ($Global:DebugMode -eq $false) {
+                Write-Host "Kone käynnistyy uudelleen 10 sekunnin päästä! :)" -ForegroundColor Red
+                Start-sleep -Seconds 2
+                for ($i = 9; $i -ge 0; $i--) {
+                    Clear-Host
+                    Write-Host $i -ForegroundColor Red
+                    Start-Sleep -Seconds 1
+                }
+                Restart-Computer -Force
+            } else {
+                Write-Host "Debug-tila on käytössä! Koneen uudelleenkäynnistys ohitetaan."
+                Start-Sleep -Seconds 1
+                Main
+            }
+        } catch {
+            $errorMessage = $_.Exception.Message
+            Write-Host "Virhe työaseman liittämisessä domainiin: $errorMessage" -ForegroundColor Red
             Start-Sleep -Seconds 1
-            Main
+            workstationSetup
         }
     }
     
@@ -1012,4 +1063,4 @@ Function workstationSetup(){
 Clear-Host
 MainMenu
 }
-main
+Main
